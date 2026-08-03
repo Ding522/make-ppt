@@ -52,6 +52,8 @@ S_SECTION_NUM = 150  # giant section number (display numeral)
 S_TAKEAWAY  = 20     # bottom takeaway conclusion
 S_SUPPORT   = 16     # supporting sentence / sub-heading  ("小標")
 S_BODY      = 14     # body text  ("內文")
+S_TABLE_HEADER = 16  # native table header
+S_TABLE_BODY = 14    # native table body; never shrink below this to force fit
 S_EYEBROW   = 12     # eyebrow metadata (== MIN_PT, matches mono)
 S_LABEL     = 12     # pills / status labels  (== MIN_PT)
 S_MONO      = 12     # mono metadata          (== MIN_PT)
@@ -123,3 +125,7 @@ DECK_CONTEXT = "技術分享"
 RULE_W = Pt(1.0)          # hairline weight
 ACCENT_RULE_W = Pt(2.25)  # orange takeaway rule weight
 RADIUS_SMALL = 0.06       # rounded-rect adjustment for pills/panels (0..0.5)
+TABLE_HEADER_H = Inches(0.52)
+TABLE_CELL_MARGIN_X = Inches(0.12)
+TABLE_CELL_MARGIN_Y = Inches(0.06)
+TABLE_BORDER_W = Pt(1.0)

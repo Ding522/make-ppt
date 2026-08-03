@@ -1,12 +1,14 @@
 # primitives.py — reusable native-PowerPoint building blocks for the make-ppt grammar.
 # Everything here produces EDITABLE PowerPoint objects (text boxes, autoshapes, connectors).
-# Slide modules compose these; they never re-implement eyebrows/titles/takeaways ad hoc.
+# Slide modules compose these; they never re-implement eyebrows, titles, takeaways,
+# or semantic tables ad hoc.
 
 import os
 from pptx.util import Inches, Pt, Emu
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR, MSO_AUTO_SIZE
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 from pptx.enum.dml import MSO_LINE_DASH_STYLE
+from pptx.oxml.xmlchemy import OxmlElement
 from pptx.oxml.ns import qn
 import theme as T
 
@@ -136,7 +138,7 @@ def add_hairline(slide, y, *, x=None, w=None, color=T.HAIRLINE, weight=T.RULE_W)
     return ln
 
 def add_takeaway_line(slide, segments, *, note=None, y=None):
-    """Bottom takeaway: thin orange rule + concrete implication (+ optional right muted note)."""
+    """Explicit optional takeaway; never call it merely to fill the page bottom."""
     y = y if y is not None else T.SLIDE_H - Inches(0.82)
     add_hairline(slide, y, color=T.ORANGE, weight=T.ACCENT_RULE_W)
     segs = [(t, dict({"bold": True, "size": T.S_TAKEAWAY}, **(o or {}))) for t, o in segments]
@@ -146,6 +148,164 @@ def add_takeaway_line(slide, segments, *, note=None, y=None):
         nb, nf = textbox(slide, T.SLIDE_W - T.MARGIN_X - Inches(2.6), y + Inches(0.16), Inches(2.6), Inches(0.35))
         rich_par(nf, [(note, {"color": T.MUTED, "size": 11, "mono": True})],
                  align=PP_ALIGN.RIGHT, first=True)
+
+
+def _set_cell_border(cell, *, color=T.HAIRLINE, width=T.TABLE_BORDER_W):
+    """Apply a flat hairline border to every edge of one native table cell."""
+    tc_pr = cell._tc.get_or_add_tcPr()
+    for edge_name in ("a:lnL", "a:lnR", "a:lnT", "a:lnB"):
+        edge = tc_pr.find(qn(edge_name))
+        if edge is None:
+            edge = OxmlElement(edge_name)
+            tc_pr.append(edge)
+        edge.set("w", str(int(width)))
+        for child in list(edge):
+            edge.remove(child)
+        solid_fill = OxmlElement("a:solidFill")
+        color_node = OxmlElement("a:srgbClr")
+        color_node.set("val", str(color))
+        solid_fill.append(color_node)
+        edge.append(solid_fill)
+        edge.append(OxmlElement("a:prstDash"))
+        edge[-1].set("val", "solid")
+
+
+def _table_segments(value):
+    if value is None:
+        return [("", {})]
+    if isinstance(value, str):
+        return [(value, {})]
+    if isinstance(value, (list, tuple)) and all(
+        isinstance(item, (list, tuple)) and len(item) == 2 for item in value
+    ):
+        return [(str(text), dict(options or {})) for text, options in value]
+    return [(str(value), {})]
+
+
+def _table_alignment(value):
+    if value in (PP_ALIGN.LEFT, PP_ALIGN.CENTER, PP_ALIGN.RIGHT):
+        return value
+    mapping = {
+        "left": PP_ALIGN.LEFT,
+        "center": PP_ALIGN.CENTER,
+        "right": PP_ALIGN.RIGHT,
+    }
+    try:
+        return mapping[str(value).lower()]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported table alignment: {value}") from exc
+
+
+def add_native_table(
+    slide,
+    x,
+    y,
+    w,
+    h,
+    *,
+    headers,
+    rows,
+    col_widths=None,
+    alignments=None,
+    row_heights=None,
+    row_label_col=None,
+    merges=None,
+):
+    """Create one editable native PowerPoint table object.
+
+    Use whenever content has column headers, repeated records, and cross-row
+    alignment. Cell values may be strings or rich-run segment lists. `col_widths`
+    are relative weights. `row_heights`, when supplied, contains absolute lengths
+    for the header plus every body row. Merge coordinates are zero-based and include
+    the header row: `(start_row, start_col, end_row, end_col)`.
+    """
+    headers = list(headers)
+    rows = [list(row) for row in rows]
+    if not headers:
+        raise ValueError("Native tables require at least one header column")
+    column_count = len(headers)
+    if any(len(row) != column_count for row in rows):
+        raise ValueError("Every native table row must match the header column count")
+
+    x, y, w, h = _emu(x), _emu(y), _emu(w), _emu(h)
+    row_count = len(rows) + 1
+    frame = slide.shapes.add_table(row_count, column_count, x, y, w, h)
+    table = frame.table
+    no_shadow(frame)
+
+    widths = list(col_widths or [1] * column_count)
+    if len(widths) != column_count or any(float(value) <= 0 for value in widths):
+        raise ValueError("col_widths must contain one positive weight per column")
+    total_weight = sum(float(value) for value in widths)
+    assigned = 0
+    for index, weight in enumerate(widths):
+        width = w - assigned if index == column_count - 1 else _emu(w * float(weight) / total_weight)
+        table.columns[index].width = width
+        assigned += width
+
+    if row_heights is not None:
+        heights = [_emu(value) for value in row_heights]
+        if len(heights) != row_count:
+            raise ValueError("row_heights must contain header height plus every body row")
+    else:
+        header_height = min(_emu(T.TABLE_HEADER_H), h)
+        body_height = _emu((h - header_height) / max(1, len(rows)))
+        heights = [header_height] + [body_height] * len(rows)
+        if len(rows):
+            heights[-1] += h - sum(heights)
+    for index, height in enumerate(heights):
+        table.rows[index].height = height
+
+    for start_row, start_col, end_row, end_col in merges or []:
+        table.cell(start_row, start_col).merge(table.cell(end_row, end_col))
+
+    column_alignments = list(alignments or ["left"] * column_count)
+    if len(column_alignments) != column_count:
+        raise ValueError("alignments must contain one value per column")
+
+    values = [headers] + rows
+    for row_index, row in enumerate(values):
+        for column_index, value in enumerate(row):
+            cell = table.cell(row_index, column_index)
+            if getattr(cell, "is_spanned", False):
+                continue
+
+            is_header = row_index == 0
+            is_row_label = (
+                not is_header
+                and row_label_col is not None
+                and column_index == row_label_col
+            )
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = T.INK if is_header else T.BG
+            cell.margin_left = cell.margin_right = T.TABLE_CELL_MARGIN_X
+            cell.margin_top = cell.margin_bottom = T.TABLE_CELL_MARGIN_Y
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+            _set_cell_border(cell)
+
+            base_options = {
+                "color": T.ON_DARK if is_header else T.INK_SOFT,
+                "size": T.S_TABLE_HEADER if is_header else T.S_TABLE_BODY,
+                "bold": is_header or is_row_label,
+            }
+            segments = [
+                (text, dict(base_options, **options))
+                for text, options in _table_segments(value)
+            ]
+            text_frame = cell.text_frame
+            text_frame.clear()
+            text_frame.word_wrap = True
+            rich_par(
+                text_frame,
+                segments,
+                size=base_options["size"],
+                align=_table_alignment(column_alignments[column_index]),
+                first=True,
+                space_after=0,
+                line=1.05,
+            )
+
+    return frame
 
 # ---------------------------------------------------------------- shapes / motifs
 def add_panel(slide, x, y, w, h, *, fill=T.PANEL_BG, line=T.PANEL_LN, radius=True, line_w=Pt(1)):

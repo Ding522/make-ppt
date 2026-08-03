@@ -25,8 +25,10 @@ binding as the visual rules below.
   3. **Supporting sentence** (muted gray, key phrases bolded in dark ink)
   4. thin warm hairline `#DED8CE` separating header zone from the working area
   5. **Working area** (the diagram / evidence / comparison — the dominant element)
-  6. optional **Takeaway line**: thin orange rule + concrete implication; optional
-     right-aligned muted mono cross-reference (`→ 解法詳見 P12`)
+  6. optional, **default-off Takeaway line**: thin orange rule + concrete implication;
+     optional right-aligned muted mono cross-reference (`→ 解法詳見 P12`)
+- Do not reserve takeaway space when it is omitted. Let the working area extend to the
+  normal bottom margin; an empty bottom band is not part of the page scaffold.
 - Cover / section / closing slides invert to near-black `#1A1714` background with a
   white top hairline, mono header row (the deck's own **real context** — topic, team,
   or date, e.g. `技術分享 / 2026-07` — plus a page or badge), and huge display
@@ -131,7 +133,12 @@ No terminal panel in an HR deck just because the style has one — form follows 
 
 ## 8. Takeaway line
 
-Bottom of many (not all) slides: thin orange rule (~2.25pt) across the content width,
+**Default-off.** Use only when the slide has a concrete, source-grounded implication
+that is not already carried by its title or working area and that changes how a
+colleague should interpret or act on the evidence. Do not reserve takeaway space when
+the condition is not met.
+
+When qualified, place a thin orange rule (~2.25pt) across the content width,
 then one concrete, source-grounded implication in bold `S_TAKEAWAY`, decisive phrase in
 orange; optionally a right-aligned muted mono **cross-reference** to where a topic is
 covered in detail (`→ Govern 詳見 P8`). It summarizes what the evidence implies and
@@ -139,10 +146,25 @@ links to the larger story. It is never a vision statement, slogan, or motivation
 filler — and never a **tease** that withholds the answer to hold attention
 (`→ 解法看後半段`, `→ 精彩的在後面`, `→ 敬請期待`): a colleague reading the deck can
 just turn the page, so point plainly at the page (`詳見 P12`) or omit the pointer.
-Omit the takeaway entirely when there is no meaningful implication (title slides, some
-section slides).
+Cover, agenda, section, workflow, architecture, and ordinary table slides normally
+omit it. A repeated title, summary sentence, or decorative closing line does not
+qualify as a takeaway.
 
-## 9. Anti-patterns (hard bans)
+## 9. Native tables
+
+Use one editable native PowerPoint table whenever content has column headers,
+repeated records, and cross-row alignment. Never recreate that grid with independent
+text boxes and lines. Default style: dark header with white 16pt text; warm-white body
+with 14pt text; 1pt hairline borders; sufficient cell padding; vertically centered
+content; left-aligned text and right-aligned numeric columns. Bold the first column
+only when it is explicitly the row-label column. Use orange only for a real difference,
+risk, or decision value. No rounded container and no shadow.
+
+If content does not fit, first simplify wording without changing technical meaning,
+then split the table across consecutive slides and repeat the header. Never shrink
+body text below 14pt or fall back to a text-box grid.
+
+## 10. Anti-patterns (hard bans)
 
 - Marketing language: 賦能未來 / 引領創新 / 開啟新篇章 / 打造全新體驗 / 全面升級 /
   邁向卓越 / 智慧轉型新紀元 / 重新定義未來 / 創造無限可能 / 驅動企業成長 /
@@ -165,5 +187,7 @@ section slides).
   `primitives.no_shadow(shape)`.
 - Fake evidence: invented numbers, invented architecture services, bullet lists
   dressed up as workflows.
+- **Fake tables:** column headers and repeated rows assembled from text boxes,
+  rectangles, and lines instead of a native table object.
 - Vary composition across the deck while preserving this grammar. Consistency ≠ the
   same layout on every slide.

@@ -43,3 +43,6 @@ composition") bind these edits too.
 - Re-render only affected slides; refresh the contact sheet.
 - Verify in the re-render that untouched slides are byte-for-byte-intent identical
   (spot-check one neighboring slide).
+- Do not opportunistically convert a legacy text-box grid into a native table during
+  an unrelated edit. Convert it only when the user explicitly requests a table fix or
+  requests a full deck rebuild.

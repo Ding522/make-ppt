@@ -58,6 +58,13 @@ At activation:
 8. Use **natural engineering language**: concrete, contextual, and willing to state a
    trade-off. Avoid generic AI filler, marketing slogans, mechanical three-part prose,
    and invented human stories or emotions.
+9. **Takeaway is default-off.** Add one only when it states a source-grounded
+   implication not already carried by the title or working area and that implication
+   changes interpretation or action. Otherwise omit it and give the working area the
+   full height; never reserve an empty takeaway zone.
+10. Content with column headers, repeated records, and cross-row alignment is a
+    semantic table. Implement it as one native PowerPoint table object, never as a
+    grid assembled from text boxes and lines.
 
 ## Orchestration workflow
 
@@ -195,6 +202,8 @@ sample; it implements every remaining slide (keeping the approved sample slides)
 4. inspects every rendered slide for implementation defects (blank slide, overflow,
    overlap, missing image, broken aspect ratio, clipping, unreadable text) and fixes
    them — defects only, no subjective redesigns, no infinite loops (max 2 fix passes)
+5. runs `scripts/validate_pptx_structure.py` for every slide whose outline specifies
+   a native table, so visual similarity cannot hide a text-box grid
 
 The builder must not change any slide's argument, purpose, evidence, or order.
 Fit/alignment/spacing adjustments are allowed.

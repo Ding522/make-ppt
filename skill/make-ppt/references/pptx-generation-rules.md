@@ -46,6 +46,7 @@ full `presentation/evidence/` pack unless the user asks for source re-verificati
 `add_background`, `add_eyebrow(number,label)`, `add_argument_title(segments)` (mixed
 runs; `[("…", {}), ("decisive", {"color": T.ORANGE}), …]`), `add_supporting_sentence`,
 `add_hairline`, `add_takeaway_line(segments, note=)`, `add_panel`,
+`add_native_table(headers, rows, col_widths=, alignments=, row_label_col=, merges=)`,
 `add_status_pill`, `add_step_marker`, `add_arrow(dashed=, arrow=)`, `add_technical_node`,
 `add_terminal_panel(title, lines, badge=)`, `add_metric_callout`,
 `add_section_slide`, `add_chip` (auto-width component label, never wraps),
@@ -56,7 +57,10 @@ is missing rather than crashing the build). `rich_par` / `textbox` are the text 
 Extend this file for additional grammar (sequence actors/messages, comparison labels,
 Kanban columns, gateway blocks) rather than one-off code in slides.
 
-**Use the right primitive — do not hand-roll these three recurring shapes:**
+**Use the right primitive — do not hand-roll these recurring structures:**
+- A **semantic table** (headers + repeated rows + aligned columns) →
+  `add_native_table`. A grid of text boxes and lines is not an editable table and
+  fails object-model QA.
 - A **component/tech-name chip** (ADK, Sandbox, Gateway, Model Armor) → `add_chip`.
   Hand-rolling a rounded rectangle with the default `word_wrap=True` and a tight width
   makes short caps tokens break mid-word ("AD / K"). `add_chip` turns wrapping off and
@@ -100,6 +104,13 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
    bug. Every geometry primitive funnels its x/y/w/h through `_emu()`, so slide code may
    divide freely. If you ever create a shape/connector directly (not via a primitive),
    wrap each coordinate in `_emu(...)` yourself.
+8. **Takeaway default-off**: call `add_takeaway_line()` only when the approved outline
+   includes a Takeaway section. Otherwise allocate the full working height; never keep
+   an empty 0.82" takeaway band.
+9. **Native table object**: when the outline says `native table`, use
+   `add_native_table()` with the structured Table Schema. Keep body text at 14pt or
+   larger. If it does not fit, simplify without changing facts, then split across
+   slides and repeat the header. Never substitute a text-box grid.
 
 ## Photo policy (reserve, don't auto-insert)
 
@@ -147,3 +158,14 @@ route its coordinates through `_emu()`. Maximum two fix passes — no subjective
 loop, no infinite regeneration. If a structural validator is available (e.g. a pptx
 validate script), run it; otherwise confirm the file opens via a LibreOffice
 conversion succeeding.
+
+Visual QA cannot prove editability. Collect the one-based slide numbers whose outline
+Visual Form is `native table`, then run:
+
+```text
+validate_pptx_structure.py presentation/presentation.pptx --require-table-slides "3,7-9"
+```
+
+Any listed slide without a native table object is a structural build failure. For an
+unrelated localized edit, preserve a legacy text-box table; convert it only when the
+user requests that table change or requests a full rebuild.

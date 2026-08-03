@@ -169,7 +169,7 @@ Sequence diagram（3 actors、numbered interactions、request/response arrows）
 
 ### Layout
 Actor 方塊橫列頂端（CLI/MCP 深色、使用者·瀏覽器 白、AuthGate 橘）；虛線 lifelines；
-6 個編號圓圈訊息由上而下；底部 takeaway。
+6 個編號圓圈訊息由上而下；工作區延伸至底部 margin，不保留 takeaway zone。
 
 ### Content
 Actors: `CLI / MCP` ・ `使用者 · 瀏覽器` ・ `AuthGate 閘道`
@@ -177,14 +177,13 @@ Actors: `CLI / MCP` ・ `使用者 · 瀏覽器` ・ `AuthGate 閘道`
 3 瀏覽器登入並授權 ・ 帳密只在這步，走公司 SSO（橘）→
 4 ↻ 同時在背景 polling，等待授權完成（muted, dashed）→
 5 發 access token + refresh token → 6 ⤿ token 存進 OS keyring 加密，不落地 config（pill）
-Takeaway：整個流程**沒有任何一個寫死的金鑰**（橘）— 從源頭杜絕帳密流入 Git
 
 ### Visual Hierarchy
-1 sequence 訊息鏈 → 2 步驟 3 的橘色強調 → 3 takeaway
+1 sequence 訊息鏈 → 2 步驟 3 的橘色強調
 
 ### Visual Elements
 actor nodes ・ dashed lifelines ・ numbered step markers ・ solid/dashed arrows ・
-mono annotations ・ pill for keyring note ・ takeaway rule
+mono annotations ・ pill for keyring note
 
 ### Source Facts
 - Source file: mcp-auth-design.md · Section “Device Flow”

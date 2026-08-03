@@ -3,7 +3,7 @@
 `outline.md` is the Presentation Intermediate Representation: a structured Slide DSL,
 not a prose outline. The builder must be able to implement the entire deck from it.
 Prose like "## Slide 5 — 介紹 DNS 問題" is insufficient. Omit fields that genuinely
-don't apply to a slide (a title slide needs no takeaway) — never fill them with
+don't apply to a slide — especially Takeaway and Table Schema — never fill them with
 filler. The exact Markdown may evolve, but the semantic fields must be preserved.
 
 ---
@@ -79,9 +79,12 @@ builder sets this as `DECK_CONTEXT` in theme.py.>
 - Technical Panel Style: #1F1B17 dark panels, traffic lights, mono content
 - Screenshot Style: aspect-preserved, thin hairline frame, annotated
 - Line Style: hairline #DED8CE 1pt; accent rules #D75F00 2.25pt
-- Takeaway Line Style: orange rule + bold concrete implication + optional muted mono pointer
+- Takeaway Line Style: optional and default-off; orange rule + bold concrete implication
+  + optional muted mono pointer only when the implication is distinct and necessary
 - Spacing Principles: 0.62" page margins; header zone ends with hairline ~2.2–2.3";
-  takeaway zone bottom ~0.82"
+  working area extends to the bottom margin unless a qualified takeaway is present
+- Native Table Style: one editable PowerPoint table object; dark header, warm-white
+  body, 1pt hairlines, 16pt header / 14pt body, no shadow
 
 ## Global Content Constraints
 
@@ -139,12 +142,28 @@ Mechanism / Workflow / Evidence / Comparison / Summary / Section / Closing>
 ### Content
 <the actual content, structured by zone/element — final wording, mono strings exact>
 
+### Table Schema
+<Include this entire section only when Visual Form is `native table`. Never describe
+a semantic table only as prose.>
+- Headers: <ordered column names>
+- Rows: <one ordered cell list per record; exact visible wording>
+- Column Width Ratios: <one positive ratio per column, e.g. 20 / 80>
+- Column Alignment: <left / center / right per column; numeric columns right-aligned>
+- Row Label Column: <column index/name or None; only this column is bolded>
+- Merged Cells: <coordinates or None>
+- Split Policy: <allowed split point(s); repeat headers on every continuation slide>
+
+### Takeaway
+<Optional and default-off. Omit this entire section unless the evidence supports a
+concrete implication that is not already stated by the title or working area and that
+changes interpretation or action. When omitted, reserve no takeaway space.>
+
 ### Visual Hierarchy
 <numbered reading order, most dominant first>
 
 ### Visual Elements
 <the native primitives/motifs required: eyebrow, mixed-run title, pills, panels,
-terminal panel, arrows, step markers, rules…>
+terminal panel, arrows, step markers, native table, rules…>
 
 ### Source Assets
 <screenshot/image files to place, or "None">

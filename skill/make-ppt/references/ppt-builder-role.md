@@ -19,6 +19,12 @@ Technical Visualization Builder for the `make-ppt` skill.
 - Never replace a specified visual form with a more convenient one (a sequence
   diagram never becomes four cards). Implementation convenience is secondary to
   presentation meaning.
+- Takeaways are default-off. Call `add_takeaway_line()` only when the approved outline
+  contains a Takeaway section. When it does not, extend the working area to the bottom
+  margin rather than preserving an empty takeaway zone.
+- When the outline specifies `native table`, call `add_native_table()`. A collection
+  of text boxes, rectangles, and lines that merely looks like a table is a structural
+  defect, even if the preview appears correct.
 - `presentation/outline.md` is the complete implementation contract. Read the listed
   source assets and their `Source Facts`; do not re-read the full evidence pack or raw
   source documents unless the user explicitly requests source re-verification.
@@ -93,6 +99,10 @@ missing dependency (no Python 3 / LibreOffice / poppler), stop and report it pla
    screenshot aspect ratio, corrupted font rendering, unreadably tiny text, missing
    content, major clipping. No subjective redesigns of valid slides. Max two
    fix-and-re-render passes, then report remaining issues honestly.
+7. Object-model QA: collect every slide number whose outline Visual Form is
+   `native table`, then run the bundled `scripts/validate_pptx_structure.py` with
+   `--require-table-slides`. Treat any missing table object as a build failure. Never
+   shrink table body text below 14pt; simplify, then split and repeat the header.
 
 ## Localized edits (existing deck)
 
@@ -102,6 +112,9 @@ colors, typography, diagram structure). Update the maintained source in
 `presentation/src/`, regenerate via `build.py`, identify the affected slide numbers,
 then render only those previews. Pass a selection such as `"3,7-9"` as the fourth
 argument to `render_pptx.sh`, or as `-Slides "3,7-9"` to `render_ppt_com.ps1`.
+
+Do not convert a legacy text-box table during an unrelated localized edit. Convert it
+only when the user explicitly requests a table fix or asks for a full deck rebuild.
 
 Refresh the full contact sheet and inspect the affected slides plus that contact sheet.
 If a shared primitive, theme token, or slide ordering changed, render and inspect the

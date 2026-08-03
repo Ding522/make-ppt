@@ -42,9 +42,17 @@ value labels, giant `66% → 97%` callout beside it); KPI emphasis (huge mono fi
 muted caption); screenshot + analysis (screenshot dominates, annotations state what it
 proves); terminal panel; code/config panel; simple native tables.
 
+**Native table boundary:** if content has column headers, repeated records, and values
+that align across rows, it is a table and must be one native PowerPoint table object.
+A matrix diagram is different: it may use free-positioned shapes only when cells need
+connectors, overlapping elements, or materially different internal visual structures.
+Do not use a matrix as an excuse to hand-build an ordinary table from text boxes.
+
 ## Rules
 
-- Charts and tables are native PowerPoint objects, not images.
+- Charts and semantic tables are native PowerPoint objects, not images or text-box grids.
+- If a native table does not fit at 14pt body text, simplify its wording without
+  changing meaning, then split it across slides and repeat the header.
 - Screenshots are evidence, not decoration — always pair with what they prove.
 - Architecture diagrams show the actual architecture; never add services for visual
   complexity. Process diagrams show actual processes; never dress bullets as a

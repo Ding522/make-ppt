@@ -43,7 +43,8 @@ specificity).
 5. Give every slide a unique informational role — if two slides make the same point,
    cut one. For each slide, internally work through: role? argument? strongest
    evidence? what should a colleague remember? is it necessary? best visual form?
-   what dominates visually? does the title state the point? is the takeaway supported?
+   what dominates visually? does the title state the point? is there a distinct
+   implication that genuinely requires a takeaway?
    Do not expose this chain of reasoning in the outline — encode its conclusions.
 6. Select the visual form per slide from the information-visualization catalog —
    structure must match the information's actual shape (sequence ≠ categories ≠
@@ -62,6 +63,17 @@ specificity).
    Content / Visual Hierarchy / Visual Elements / Source Assets / Source Facts /
    Style Constraints / Editing Constraints). Omit fields that don't apply to a slide
    rather than filling them with filler.
+10. **Takeaway is default-off.** Include a Takeaway section only when it adds a
+    source-grounded implication not already stated by the title or working area and
+    that implication changes interpretation or action. Otherwise omit the section
+    entirely and do not reserve bottom space. Cover, agenda, section, workflow,
+    architecture, and ordinary table slides normally have no takeaway.
+11. Treat content with column headers, repeated records, and cross-row alignment as a
+    `native table`, not a matrix diagram or a set of text boxes. For every native table
+    slide, write the complete Table Schema: headers, ordered cell rows, width ratios,
+    alignment, row-label column, merges, and safe split points. If the table cannot fit
+    at 14pt body text, simplify without changing meaning, then split across slides and
+    repeat the header.
 
 ## Language & tone
 
