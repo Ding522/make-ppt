@@ -2,7 +2,7 @@
 
 `make-ppt` is one portable Agent Skill for producing source-grounded, editable
 PowerPoint decks in a fixed engineering editorial style. The canonical package is
-[`skill/make-ppt`](skill/make-ppt); client-specific copies are generated from it.
+[`skill/make-ppt`](skill/make-ppt); client-specific integrations are generated from it.
 
 ## Install
 
@@ -28,6 +28,10 @@ python .\install.py --client all --scope project --project-dir C:\path\to\projec
 ```
 
 Reinstall an updated version with `--force`. Preview targets first with `--dry-run`.
+For Claude Code, installation also generates or refreshes `ppt-planner.md` and
+`ppt-builder.md` under the matching `.claude/agents/` scope. These files are generated
+from the canonical role references plus Claude-specific frontmatter; edit the source
+files in this repository rather than the installed copies.
 
 | Client | User scope | Project scope |
 |---|---|---|
@@ -38,6 +42,8 @@ Reinstall an updated version with `--force`. Preview targets first with `--dry-r
 
 Other Agent Skills compatible clients can import the canonical
 `skill/make-ppt` folder directly or copy it into their documented skills directory.
+The core skill remains client-neutral; integrations under `integrations/` adapt it to
+native client features such as Codex UI metadata and Claude Code subagents.
 
 ## Use
 
