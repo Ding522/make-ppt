@@ -59,12 +59,15 @@ Resolve all bundled paths relative to the `SKILL_DIR` supplied by the main workf
 Never invoke the Windows `python3` Store shim or assemble a raw LibreOffice profile
 command. Use the bundled wrappers appropriate to the active shell:
 
-- Bash/WSL/Git Bash: `scripts/run_python.sh` and `scripts/render_pptx.sh`.
+- macOS/Bash/WSL/Git Bash: `scripts/run_python.sh` and `scripts/render_pptx.sh`.
 - PowerShell: `scripts/run_python.ps1` and `scripts/render_ppt_com.ps1`.
 
 The Python wrappers find a working Python 3 interpreter. The rendering wrappers handle
 native paths and renderer-specific setup. `render_ppt_com.ps1` requires Microsoft
-PowerPoint; `render_pptx.sh` can use PowerPoint or LibreOffice.
+PowerPoint on Windows. On macOS, `render_pptx.sh` detects PowerPoint through Launch
+Services, automates its PDF export through `osascript`, and uses `pdftoppm` for PNG
+previews. It falls back to LibreOffice plus `pdftoppm` when native PowerPoint rendering
+is unavailable.
   A hand-built `file://` URL on Windows (e.g. `file://C:\Users\…` or an MSYS `/tmp/…` path)
   makes LibreOffice report a corrupted `bootstrap.ini` and pop a MODAL dialog that blocks
   the headless run until someone clicks OK — the single biggest time-sink in this build.
@@ -73,7 +76,9 @@ If a render fails, re-run the SAME wrapper capturing output (`… render_pptx.sh
 report the actual error. Do not call `soffice`/`python3` directly, do not hunt for binaries,
 do not improvise a fallback renderer, and never launch more than one render at a time
 (concurrent LibreOffice instances collide on the profile). If a wrapper reports a genuinely
-missing dependency (no Python 3 / LibreOffice / poppler), stop and report it plainly.
+missing dependency (no Python 3 / PowerPoint / LibreOffice / Poppler), stop and report
+it plainly. The first macOS render may require the user to approve Automation access
+from the active terminal or AI client to Microsoft PowerPoint.
 
 ## Build procedure (new deck)
 

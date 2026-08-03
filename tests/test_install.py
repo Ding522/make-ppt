@@ -35,6 +35,17 @@ class InstallTests(unittest.TestCase):
             project_dir = Path(temporary)
             run_installer(project_dir, "--client", "claude")
 
+            self.assertTrue(
+                (
+                    project_dir
+                    / ".claude"
+                    / "skills"
+                    / "make-ppt"
+                    / "scripts"
+                    / "render_ppt_mac.applescript"
+                ).is_file()
+            )
+
             for agent_name, role_name in (
                 ("ppt-planner", "ppt-planner-role.md"),
                 ("ppt-builder", "ppt-builder-role.md"),

@@ -23,9 +23,10 @@ At activation:
 3. Resolve every bundled `references/`, `templates/`, `examples/`, `assets/`, and
    `scripts/` path relative to `SKILL_DIR`. Never pass the literal text `SKILL_DIR`
    or `<skill>` to a command.
-4. Require file read/write access and a working Python 3 interpreter. Rendering also
-   requires Microsoft PowerPoint on Windows or LibreOffice. If a required capability
-   is unavailable, report the missing capability and the unfinished stage precisely.
+4. Require file read/write access and a working Python 3 interpreter. Rendering uses
+   Microsoft PowerPoint on Windows, Microsoft PowerPoint plus Poppler on macOS, or
+   LibreOffice plus Poppler as the portable fallback. If a required capability is
+   unavailable, report the missing capability and the unfinished stage precisely.
 5. Use subagents only when the active client provides them. Otherwise execute the
    planner and builder roles sequentially in the current agent.
 6. Use the client's available image-viewing capability for visual QA. If none exists,
@@ -196,7 +197,7 @@ sample; it implements every remaining slide (keeping the approved sample slides)
 
 1. generates the full `presentation/presentation.pptx`
 2. renders previews with the bundled renderer appropriate to the host:
-   `scripts/render_pptx.sh` from Bash/WSL/Git Bash, or
+   `scripts/render_pptx.sh` from macOS/Bash/WSL/Git Bash, or
    `scripts/render_ppt_com.ps1` from PowerShell with Microsoft PowerPoint
 3. builds `presentation/preview-contact-sheet.png` via `scripts/create_contact_sheet.py`
 4. inspects every rendered slide for implementation defects (blank slide, overflow,

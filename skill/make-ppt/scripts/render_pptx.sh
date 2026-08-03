@@ -19,6 +19,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 has_cmd() { command -v "$1" >/dev/null 2>&1; }
 
+is_macos() { [ "$(uname -s 2>/dev/null)" = "Darwin" ]; }
+
+mac_powerpoint_available() {
+  [ -d "/Applications/Microsoft PowerPoint.app" ] ||
+    [ -d "$HOME/Applications/Microsoft PowerPoint.app" ] ||
+    { has_cmd open && open -Ra "Microsoft PowerPoint" >/dev/null 2>&1; }
+}
+
 to_windows_path() {
   if has_cmd cygpath; then
     cygpath -w "$1"
@@ -122,16 +130,77 @@ list_selected_previews() {
   fi
 }
 
+page_files() {
+  local directory="$1" f page
+  for f in "$directory"/rendered-*.png; do
+    [ -e "$f" ] || continue
+    page="${f##*rendered-}"; page="${page%.png}"
+    printf '%08d\t%s\n' "$page" "$f"
+  done | sort -n | cut -f2-
+}
+
+convert_pdf_to_previews() {
+  local pdf="$1" temporary="$2" f
+  if ! pdftoppm -png -r "$DPI" "$pdf" "$temporary/rendered"; then
+    echo "ERROR: PDF to PNG conversion failed" >&2
+    return 3
+  fi
+
+  local i=1
+  while IFS= read -r f; do
+    if slide_selected "$i"; then
+      mv "$f" "$OUT/slide-$(printf '%02d' "$i").png"
+    fi
+    i=$((i+1))
+  done < <(page_files "$temporary")
+  list_selected_previews
+}
+
+require_pdftoppm() {
+  if has_cmd pdftoppm; then
+    return 0
+  fi
+  echo "ERROR: pdftoppm not found. Install Poppler:" >&2
+  echo "  macOS:   brew install poppler" >&2
+  echo "  Debian:  sudo apt install poppler-utils" >&2
+  exit 2
+}
+
 validate_slide_spec
 clear_previews
 
-# ---------------------------------------------------------------- primary: PowerPoint
+# ------------------------------------------------------ primary: PowerPoint for macOS
+# Launch Services catches App Store and non-standard installations; the explicit paths
+# keep detection working when Spotlight/Launch Services metadata is unavailable.
+if is_macos && has_cmd osascript && mac_powerpoint_available &&
+    [ -f "$SCRIPT_DIR/render_ppt_mac.applescript" ]; then
+  require_pdftoppm
+  OFFICE_TMP="$HOME/Library/Group Containers/UBF8T346G9.Office/TemporaryItems"
+  if [ -d "$OFFICE_TMP" ] && [ -w "$OFFICE_TMP" ]; then
+    TMP="$(mktemp -d "$OFFICE_TMP/make-ppt.XXXXXX")"
+  else
+    TMP="$(mktemp -d)"
+  fi
+  trap 'rm -rf "$TMP"' EXIT
+  PDF="$TMP/rendered.pdf"
+  if osascript "$SCRIPT_DIR/render_ppt_mac.applescript" "$DECK" "$PDF" &&
+      [ -f "$PDF" ] && convert_pdf_to_previews "$PDF" "$TMP"; then
+    exit 0
+  fi
+  echo "PowerPoint for macOS rendering failed; falling back to LibreOffice." >&2
+  rm -rf "$TMP"
+  trap - EXIT
+fi
+
+# ------------------------------------------------------- primary: PowerPoint for Windows
 # Pixel width for the requested DPI on a 13.333" wide slide (13.333 = 40/3).
 WIDTH=$(( DPI * 40 / 3 ))
 PWSH=""
-for c in powershell.exe pwsh.exe powershell pwsh; do
-  if has_cmd "$c"; then PWSH="$c"; break; fi
-done
+if ! is_macos; then
+  for c in powershell.exe pwsh.exe powershell pwsh; do
+    if has_cmd "$c"; then PWSH="$c"; break; fi
+  done
+fi
 if [ -n "$PWSH" ] && [ -f "$SCRIPT_DIR/render_ppt_com.ps1" ]; then
   if is_windows_exe "$PWSH"; then
     PS1="$(to_windows_path "$SCRIPT_DIR/render_ppt_com.ps1")"
@@ -167,11 +236,11 @@ fi
 if [ -z "$SOFFICE" ]; then
   echo "ERROR: no renderer available. Install Microsoft PowerPoint (preferred) or LibreOffice:" >&2
   echo "  Windows: PowerPoint is used automatically if installed" >&2
-  echo "  macOS:   brew install --cask libreoffice" >&2
+  echo "  macOS:   install Microsoft PowerPoint, or: brew install --cask libreoffice" >&2
   echo "  Debian:  sudo apt install libreoffice" >&2
   exit 2
 fi
-has_cmd pdftoppm || { echo "ERROR: pdftoppm (poppler-utils) not found" >&2; exit 2; }
+require_pdftoppm
 
 # soffice may be either a native Windows app (Git Bash/MSYS/WSL interop) or a Unix app.
 if is_windows_exe "$SOFFICE"; then
@@ -197,21 +266,4 @@ if ! "$SOFFICE" --headless --norestore --nofirststartwizard --nolockcheck \
 fi
 PDF="$TMP/$(basename "${DECK%.pptx}").pdf"
 [ -f "$PDF" ] || { echo "ERROR: PDF conversion failed" >&2; exit 3; }
-
-pdftoppm -png -r "$DPI" "$PDF" "$TMP/rendered"
-page_files() {
-  local f page
-  for f in "$TMP"/rendered-*.png; do
-    [ -e "$f" ] || continue
-    page="${f##*rendered-}"; page="${page%.png}"
-    printf '%08d\t%s\n' "$page" "$f"
-  done | sort -n | cut -f2-
-}
-i=1
-while IFS= read -r f; do
-  if slide_selected "$i"; then
-    mv "$f" "$OUT/slide-$(printf '%02d' "$i").png"
-  fi
-  i=$((i+1))
-done < <(page_files)
-list_selected_previews
+convert_pdf_to_previews "$PDF" "$TMP"

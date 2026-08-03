@@ -59,5 +59,6 @@ expose it as `$make-ppt`. The natural-language form works without relying on eit
 client convention.
 
 The workflow pauses after the outline and after a two-slide style sample. It requires
-file read/write access and Python 3. Rendering requires Microsoft PowerPoint on Windows
-or LibreOffice on another supported host.
+file read/write access and Python 3. Rendering uses Microsoft PowerPoint on Windows,
+Microsoft PowerPoint plus Poppler on macOS, or LibreOffice plus Poppler as the portable
+fallback.

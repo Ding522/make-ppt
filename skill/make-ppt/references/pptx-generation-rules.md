@@ -125,8 +125,8 @@ the evidence itself is the argument.
 
 ## Render & preview pipeline
 
-From Bash/WSL/Git Bash, use the bundled `scripts/render_pptx.sh`. From PowerShell
-with Microsoft PowerPoint, use `scripts/render_ppt_com.ps1`. Render
+From macOS/Bash/WSL/Git Bash, use the bundled `scripts/render_pptx.sh`. From PowerShell
+with Microsoft PowerPoint on Windows, use `scripts/render_ppt_com.ps1`. Render
 `presentation/presentation.pptx` into `presentation/preview`, then execute the bundled
 `scripts/create_contact_sheet.py` with arguments `presentation/preview` and
 `presentation/preview-contact-sheet.png`.
@@ -135,11 +135,12 @@ For a localized edit, pass a slide selection as the fourth argument, for example
 `render_pptx.sh deck.pptx preview 140 "3,7-9"`. Selected renders keep their original
 `slide-NN.png` names; unaffected previews remain available for the contact sheet.
 
-`render_pptx.sh` renders with **Microsoft PowerPoint via COM automation**
-(`render_ppt_com.ps1`) whenever PowerPoint is installed — the previews then match what
-the user sees when opening the deck, and no LibreOffice or poppler is required. On a
-machine without PowerPoint (macOS/Linux, or Windows without Office) it falls back
-automatically to LibreOffice headless → PDF → `pdftoppm`. Either way it emits
+`render_pptx.sh` prefers native Microsoft PowerPoint: COM automation through
+`render_ppt_com.ps1` on Windows, or AppleScript PDF export through
+`render_ppt_mac.applescript` on macOS. Windows PowerPoint exports PNG directly; macOS
+PowerPoint exports PDF and therefore requires Poppler's `pdftoppm`. If native PowerPoint
+is unavailable or its automation fails, the wrapper falls back automatically to
+LibreOffice headless → PDF → `pdftoppm`. Either way it emits
 `slide-01.png`, `slide-02.png`, …. This selection is automatic — do not ask the user
 which renderer to use. If NO renderer is available, report it and deliver the .pptx
 anyway — do not fake previews.
