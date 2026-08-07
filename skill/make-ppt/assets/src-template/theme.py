@@ -2,7 +2,6 @@
 # Values are extracted from the fixed visual reference (AI_Agentic_Coding_導入實戰.pdf).
 # Every slide module imports from here. Never hardcode colors/sizes in slide code.
 
-import os, subprocess
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 
@@ -68,50 +67,10 @@ def snap_pt(size):
     return s
 
 # ---------------------------------------------------------------- fonts
-def _installed_font_families() -> str:
-    """Enumerate installed font family names, cross-platform. Probed once and cached."""
-    # Linux / macOS: fontconfig
-    try:
-        r = subprocess.run(["fc-list", ":family"], capture_output=True, text=True, timeout=10)
-        if r.returncode == 0 and r.stdout.strip():
-            return r.stdout
-    except Exception:
-        pass
-    # Windows: family names are the value names under the Fonts registry keys
-    if os.name == "nt":
-        chunks = []
-        for root in ("HKLM", "HKCU"):
-            key = root + r"\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
-            try:
-                r = subprocess.run(["reg", "query", key], capture_output=True, text=True, timeout=10)
-                chunks.append(r.stdout)
-            except Exception:
-                pass
-        return "\n".join(chunks)
-    return ""
-
-_FONT_FAMILIES = _installed_font_families()
-
-def _fc_has(family: str) -> bool:
-    return family.lower() in _FONT_FAMILIES.lower()
-
-def pick_font(candidates, fallback):
-    """Return the first installed family; verify before committing (no blind fallback)."""
-    for c in candidates:
-        if _fc_has(c):
-            return c
-    return fallback
-
-# CJK display/body font (heavy weights must exist for editorial titles)
-FONT_CJK = pick_font(
-    ["Noto Sans TC", "Noto Sans CJK TC", "Noto Sans CJK JP", "Microsoft JhengHei", "PingFang TC"],
-    "Noto Sans CJK TC",
-)
-# Mono font for eyebrows, code, protocol labels, technical metadata
-FONT_MONO = pick_font(
-    ["JetBrains Mono", "Cascadia Code", "IBM Plex Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Consolas"],
-    "Courier New",
-)
+# Fixed pairing: Noto Sans TC for Chinese/proportional text, Consolas for technical mono.
+# Verify both are installed before building; do not silently substitute another family.
+FONT_CJK = "Noto Sans TC"
+FONT_MONO = "Consolas"
 
 # ---------------------------------------------------------------- deck context
 # The mono context line on dark cover/section slides. Set this ONCE per deck to what

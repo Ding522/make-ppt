@@ -70,14 +70,13 @@ any slide's area; the rest is ink, muted gray, and whitespace.
   titles are a separate register and keep their large sizes (`S_TITLE_BIG` 40pt,
   `S_SECTION_NUM` 150pt) — the 28pt one-line rule applies to content slides, not to the
   hero display type.
-- CJK family: verify availability before use (`theme.pick_font()`, cross-platform).
-  Preference order:
-  Noto Sans TC → Noto Sans CJK TC → Microsoft JhengHei → PingFang TC. Never reference
-  a nonexistent font and rely on fallback. Heavy weights must exist (titles are bold).
-- Mono family (verify likewise): JetBrains Mono → Cascadia Code → IBM Plex Mono →
-  Noto Sans Mono → DejaVu Sans Mono. Mono is used for: eyebrows, commands, code,
+- CJK family: **Noto Sans TC** for all proportional text: titles, supporting sentences,
+  body copy, labels, and tables. Verify that it and its bold weight are installed before
+  building. Do not substitute Microsoft JhengHei or another CJK family silently.
+- Mono family: **Consolas** for eyebrows, commands, code,
   file paths, RFC identifiers, protocol names, config keys, technical metadata,
-  numbering (`// 16`, `01`, page counters), section header rows on dark slides.
+  numbering (`// 16`, `01`, page counters), section header rows on dark slides. Verify
+  it is installed before building; report a missing font instead of silently substituting.
 - Body text left-aligned. No decorative fonts.
 
 ## 4. The technical eyebrow

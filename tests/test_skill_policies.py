@@ -51,6 +51,26 @@ class SkillPolicyTests(unittest.TestCase):
         self.assertIn("Preserve the approved slide order", builder)
         self.assertNotIn("### Section Continuity", outline)
 
+    def test_font_pair_is_pinned_to_noto_sans_tc_and_consolas(self) -> None:
+        theme = (SKILL_DIR / "assets" / "src-template" / "theme.py").read_text(
+            encoding="utf-8"
+        )
+        style = (SKILL_DIR / "references" / "style-guide.md").read_text(
+            encoding="utf-8"
+        )
+        rules = (SKILL_DIR / "references" / "pptx-generation-rules.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn('FONT_CJK = "Noto Sans TC"', theme)
+        self.assertIn('FONT_MONO = "Consolas"', theme)
+        self.assertNotIn("Microsoft JhengHei", theme)
+        self.assertNotIn("JetBrains Mono", theme)
+        self.assertIn("**Noto Sans TC**", style)
+        self.assertIn("**Consolas**", style)
+        self.assertIn("`Noto Sans TC`", rules)
+        self.assertIn("`Consolas`", rules)
+
 
 if __name__ == "__main__":
     unittest.main()

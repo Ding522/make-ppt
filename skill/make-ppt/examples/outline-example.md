@@ -49,7 +49,7 @@ technical · factual · concise · evidence-oriented · direct · implementation
 
 ## Design System
 
-（同 outline-template.md 預設；CJK font: Noto Sans TC（已驗證）；Mono: JetBrains Mono（已驗證））
+（同 outline-template.md 預設；CJK font: Noto Sans TC（已驗證）；Mono: Consolas（已驗證））
 
 ## Global Content Constraints
 

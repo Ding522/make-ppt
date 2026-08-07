@@ -74,11 +74,10 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
 
 1. **Blank layout only**: `prs.slide_layouts[6]`; set slide size 13.333"×7.5" before
    adding slides.
-2. **Fonts**: `theme.pick_font()` probes installed families cross-platform (`fc-list` on
-   Linux/macOS, the Fonts registry on Windows) — never reference an uninstalled font.
-   Set BOTH latin and East Asian typefaces per run (primitives do this via the
-   `a:ea` element). If only a non-TC CJK variant exists (e.g. Noto Sans CJK JP),
-   use it and report the substitution.
+2. **Fonts**: use `Noto Sans TC` for all proportional text and `Consolas` for mono
+   text. Before building, verify both fonts are installed; report a missing font rather
+   than silently substituting another family. Set BOTH Latin and East Asian typefaces
+   per run (primitives do this via the `a:ea` element).
 3. **Text**: assign text via runs (never `text_frame.text =` on styled frames — it
    collapses formatting); zero the text-frame margins when aligning with shapes;
    left-align body text.
