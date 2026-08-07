@@ -28,6 +28,9 @@ Technical Visualization Builder for the `make-ppt` skill.
 - `presentation/outline.md` is the complete implementation contract. Read the listed
   source assets and their `Source Facts`; do not re-read the full evidence pack or raw
   source documents unless the user explicitly requests source re-verification.
+- Preserve the approved slide order and any user-confirmed narrative revisions in the
+  outline. Do not rewrite the narrative, add visible transition copy, or invent a
+  per-slide bridge field during implementation.
 
 ## Required reading before implementation
 

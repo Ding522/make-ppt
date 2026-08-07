@@ -28,10 +28,10 @@ python .\install.py --client all --scope project --project-dir C:\path\to\projec
 ```
 
 Reinstall an updated version with `--force`. Preview targets first with `--dry-run`.
-For Claude Code, installation also generates or refreshes `ppt-planner.md` and
-`ppt-builder.md` under the matching `.claude/agents/` scope. These files are generated
-from the canonical role references plus Claude-specific frontmatter; edit the source
-files in this repository rather than the installed copies.
+Installation also generates or refreshes the planner and builder agents in each
+client's native agent directory. These files are generated from the canonical role
+references plus client-specific metadata; edit the source files in this repository
+rather than the installed copies.
 
 | Client | User scope | Project scope |
 |---|---|---|
@@ -39,6 +39,10 @@ files in this repository rather than the installed copies.
 | Claude Code | `~/.claude/skills/make-ppt` | `.claude/skills/make-ppt` |
 | Kiro | `~/.kiro/skills/make-ppt` | `.kiro/skills/make-ppt` |
 | GitHub Copilot | `~/.copilot/skills/make-ppt` | `.github/skills/make-ppt` |
+
+Agent files use these native locations: Codex `~/.codex/agents` / `.codex/agents`,
+Claude `~/.claude/agents` / `.claude/agents`, Kiro `~/.kiro/agents` / `.kiro/agents`,
+and GitHub Copilot `~/.copilot/agents` / `.github/agents`.
 
 Other Agent Skills compatible clients can import the canonical
 `skill/make-ppt` folder directly or copy it into their documented skills directory.

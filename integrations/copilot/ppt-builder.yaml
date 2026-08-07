@@ -1,0 +1,2 @@
+description: Implement an approved make-ppt outline as an editable PPTX and perform visual QA.
+tools: ['search', 'edit', 'runCommands']

@@ -46,6 +46,18 @@ Adoption increased → project count exploded → internal access became the bot
 → plaintext tokens blocked scale → unified authentication became necessary
 → Device Flow and audience-bound tokens provided the control layer>
 
+## Narrative Review
+
+<Required. Keep this compact. Review the order of slides within each section, not the
+whole deck as one forced chain. Each slide should follow the previous slide's unresolved
+question or premise, add a distinct step, and give the next slide a reason to follow.
+Use only a short status when the sequence works. When it does not, record the affected
+slide pair, the gap, and a recommended adjustment. Do not add visible transition copy or
+a fixed previous/current/next field to every slide.>
+
+- Status: <Pass / Needs review>
+- Findings: <Omit when Status is Pass. Otherwise: Slides NN -> NN; Gap; Recommended Adjustment; Requires User Confirmation: Yes>
+
 ## Content Tone
 
 technical · factual · concise · evidence-oriented · direct · implementation-grounded
@@ -97,7 +109,9 @@ builder sets this as `DECK_CONTEXT` in theme.py.>
 
 ## Slide Architecture
 
-<one line per slide — NN — Role — informational purpose; every slide's role unique>
+<one line per slide — NN — Section — Role — informational purpose;
+every slide's role unique, and adjacent slides in the same section must read as
+consecutive narrative beats>
 
 01 — Opening — …
 02 — Agenda — …

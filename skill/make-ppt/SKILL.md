@@ -35,6 +35,9 @@ At activation:
 ## Non-negotiable rules
 
 1. `outline.md` is the presentation source of truth. Planner writes it; builder implements it.
+   It must preserve a section-level throughline: adjacent slides inside the same
+   section should feel like consecutive narrative beats, not independent pages that
+   merely share a topic.
 2. **Two review checkpoints (new presentations only).** Pause after the outline so the
    user can confirm the narrative (Checkpoint 1), and again after building a small
    style sample of 1–2 slides so the user can confirm the visual style (Checkpoint 2) —
@@ -133,7 +136,10 @@ writes `presentation/outline.md` following `templates/outline-template.md`
 (realistic example: `examples/outline-example.md`).
 
 The outline must include a compact **Golden Circle Lens** (`Why`, `How`, `What`) as an
-internal narrative check, not as mandatory visible slide sections. Apply natural
+internal narrative check, not as mandatory visible slide sections. It must also include
+a compact **Narrative Review** for same-section sequencing. The review should state a
+short status and record only weak transitions, affected slide pairs, the reason for the
+gap, and a recommended adjustment. Apply natural
 engineering language: concrete nouns, active verbs, specific friction and trade-offs;
 never add unsupported people, emotions, outcomes, or generic AI-sounding filler.
 
@@ -143,8 +149,10 @@ The planner must NOT generate the PPTX or write generation code.
 
 After `outline.md` exists, do NOT invoke the builder yet. Present a concise outline
 summary: the planned slide count (User Requested vs Actual Planned), a one-line-per-slide
-list of each slide's title/argument, and any key assumptions or source conflicts recorded
-in the outline. Point to `presentation/outline.md` for full detail.
+list of each slide's title/argument, the Narrative Review result, and any key assumptions
+or source conflicts recorded in the outline. If the review finds a weak transition, name
+the affected slide pair and proposed adjustment so the user can confirm it before the
+outline is changed. Point to `presentation/outline.md` for full detail.
 
 Then **end your turn and wait for the user's own reply.** This is a hard stop that hands
 control back to the user. Do not bundle preference
@@ -207,7 +215,9 @@ sample; it implements every remaining slide (keeping the approved sample slides)
    a native table, so visual similarity cannot hide a text-box grid
 
 The builder must not change any slide's argument, purpose, evidence, or order.
-Fit/alignment/spacing adjustments are allowed.
+Fit/alignment/spacing adjustments are allowed. It must preserve the approved slide order
+and any user-confirmed narrative revisions from `outline.md`; do not add visible
+transition copy or invent per-slide bridge annotations during implementation.
 
 **Step 4-edit (existing deck):** update the maintained source under
 `presentation/src/`, regenerate the PPTX with `build.py`, identify the affected slide

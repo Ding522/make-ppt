@@ -37,6 +37,11 @@ gateway only once the reader sees why it is necessary. Close with the mechanism
 Demand for MCP grew → integration stalled → root cause: plaintext tokens on clients
 → unified auth gateway → Device Flow + PKCE removes keys from disk → adoption unblocked
 
+## Narrative Review
+
+- Status: Needs review
+- Findings: Slides 06 -> 07; the architecture slide introduces the gateway, but the protocol slide can read like a new topic; Recommended Adjustment: keep the order and make Slide 07's title or supporting sentence explicitly name the gateway handoff; Requires User Confirmation: Yes
+
 ## Content Tone
 
 technical · factual · concise · evidence-oriented · direct · implementation-grounded

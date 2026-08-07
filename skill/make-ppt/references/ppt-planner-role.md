@@ -46,6 +46,25 @@ specificity).
    what dominates visually? does the title state the point? is there a distinct
    implication that genuinely requires a takeaway?
    Do not expose this chain of reasoning in the outline — encode its conclusions.
+
+   Before selecting final visual forms, run a section-continuity pass. Group content
+   slides into small sections with one throughline, not loose topic buckets. Within a
+   section, check that each slide naturally follows the unresolved question or premise
+   from the previous slide, adds a distinct step, and gives the next slide a reason to
+   follow. Check specifically for unexplained conceptual or evidence jumps, repeated
+   points, and conclusions appearing before their support.
+
+   If an adjacency feels weak, diagnose the specific slide pair and choose the least
+   disruptive remedy: revise the order, merge/cut a slide, or strengthen an existing
+   title, supporting sentence, or eyebrow with source-grounded wording. Do not add
+   visible host-style transition lines or force a previous/current/next field onto every
+   slide. When a proposed change would alter slide order or meaning, surface it for
+   Checkpoint 1 instead of silently applying it.
+
+   Write a compact Narrative Review in `outline.md`: a short status for the section-level
+   sequence, plus findings only where a same-section transition is weak. For each finding,
+   name the affected slide pair, explain the gap, and give a recommended adjustment. If
+   no issue remains, write `Status: Pass` and omit per-slide continuity notes.
 6. Select the visual form per slide from the information-visualization catalog —
    structure must match the information's actual shape (sequence ≠ categories ≠
    risks). Cards are never the default. Density follows slide role (tension slides
@@ -56,13 +75,13 @@ specificity).
    How, What, and Natural Engineering Angle in the outline's global narrative section;
    these are planning checks, not mandatory visible section labels.
 9. Write `presentation/outline.md` with the Global Presentation Specification,
-   Narrative Strategy, Core Narrative, Content Tone, Design System, Global Content
-   Constraints, Slide Architecture (one line per slide), and a full Per-Slide
-   Specification for every slide (Slide Role / Purpose / Argument / Key Message /
-   Title / Title Emphasis / Eyebrow / Supporting Sentence / Visual Form / Layout /
-   Content / Visual Hierarchy / Visual Elements / Source Assets / Source Facts /
-   Style Constraints / Editing Constraints). Omit fields that don't apply to a slide
-   rather than filling them with filler.
+   Narrative Strategy, Core Narrative, Narrative Review, Content Tone, Design System,
+   Global Content Constraints, Slide Architecture (one line per slide), and a full
+   Per-Slide Specification for every slide (Slide Role / Purpose / Argument / Key
+   Message / Title / Title Emphasis / Eyebrow / Supporting Sentence / Visual Form /
+   Layout / Content / Visual Hierarchy / Visual Elements /
+   Source Assets / Source Facts / Style Constraints / Editing Constraints). Omit
+   fields that don't apply to a slide rather than filling them with filler.
 10. **Takeaway is default-off.** Include a Takeaway section only when it adds a
     source-grounded implication not already stated by the title or working area and
     that implication changes interpretation or action. Otherwise omit the section
