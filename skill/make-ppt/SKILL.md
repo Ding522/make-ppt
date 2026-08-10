@@ -10,6 +10,9 @@ This skill produces complete, editable PowerPoint decks in one fixed personal st
 `references/style-guide.md`). The workflow carries raw source materials through to a
 rendered deck, pausing at **two review checkpoints** — after the outline, and after a
 small style sample — so the user can confirm direction before the full deck is built.
+When the narrative direction is unclear or the user asks to explore, it first pauses
+at a compact **Narrative Fork checkpoint** so multiple axes are compared before a full
+outline is written.
 
 ## Portable execution contract
 
@@ -38,13 +41,16 @@ At activation:
    It must preserve a section-level throughline: adjacent slides inside the same
    section should feel like consecutive narrative beats, not independent pages that
    merely share a topic.
-2. **Two review checkpoints (new presentations only).** Pause after the outline so the
+2. **Two review checkpoints for new presentations.** Pause after the outline so the
    user can confirm the narrative (Checkpoint 1), and again after building a small
    style sample of 1–2 slides so the user can confirm the visual style (Checkpoint 2) —
    before committing to the full deck. Each checkpoint is a **real stop**: present it
    concisely, then **end your turn and wait for the user's own next message**. Never use
-   an interactive picker or poll that auto-continues after selection. These checkpoints apply only to new
-   presentations, never to localized edits of an existing deck.
+   an interactive picker or poll that auto-continues after selection. Localized edits
+   do not repeat both checkpoints, but any edit that invalidates outline approval must
+   return to Checkpoint 1.
+   `standard`, `explore`, and `strict` all retain both checkpoints. No mode may skip
+   approval of the current `outline.md`.
 3. The final `.pptx` must be **editable**: native text boxes, shapes, connectors, tables.
    Never flatten slides into images. Only source screenshots/photos stay raster.
 4. Never invent facts: no fabricated KPIs, percentages, dates, milestones, components,
@@ -69,16 +75,28 @@ At activation:
 10. Content with column headers, repeated records, and cross-row alignment is a
     semantic table. Implement it as one native PowerPoint table object, never as a
     grid assembled from text boxes and lines.
+11. Resolve and enforce the cost mode with `references/cost-control-workflow.md`.
+    `standard` is the default. `explore` and `strict` require explicit user intent;
+    prompt clarity alone never activates `strict`.
+12. Classify every modification before editing. Non-small changes require
+    `presentation/edit-impact.md`; full rebuild triggers require the exact user reply
+    `確認 full rebuild` before rebuilding.
 
 ## Orchestration workflow
 
 ### Step 0 — Classify the request
 
-- **New presentation** → Step 1.
+- **New presentation** → read `references/cost-control-workflow.md`, resolve the cost
+  mode, and assess direction clarity. In `strict`, if fewer than two of Purpose,
+  Audience, and Narrative Angle are explicit, ask one focused question at a time and
+  hard-pause before source processing. Otherwise continue to Step 1.
 - **Modification of an existing generated deck** (a `presentation/` directory with
   `outline.md` + `src/` exists and the user references slide numbers or the deck)
-  → read `references/localized-edit-principle.md`, then run the builder role directly
-  (Step 4-edit). Do not re-plan the whole deck.
+  → read `references/cost-control-workflow.md` and
+  `references/localized-edit-principle.md`, classify impact, then follow Step 4-edit.
+  Only `small-localized` changes go directly to the builder. For every other class,
+  write `presentation/edit-impact.md` before touching maintained source. Do not
+  re-plan the whole deck unless the classification requires a rollback to text.
 
 ### Step 1 — Discover source materials
 
@@ -111,24 +129,46 @@ It ignores generated directories, including `presentation/`, so the pack never f
 its own output back into discovery. Pass the pack path and manifest to the planner;
 do not paste the same extracted source text into the delegation prompt again.
 
-### Step 2 — Ambiguity gate (rarely triggers)
+### Step 2 — Ambiguity and narrative direction gate
 
 Only stop to ask the user when the missing information fundamentally prevents a
 meaningful presentation: no substantive topic, no sources when the request depends on
 source evidence, irreconcilably conflicting required numbers, an explicitly required
-but unavailable logo, or directly conflicting language requirements.
-Everything else: make a reasonable assumption and record it in `outline.md`.
+but unavailable logo, or directly conflicting language requirements. Except for the
+mode-specific direction clarity gate below, make a reasonable assumption for other
+missing details and record it in `outline.md`.
 Never ask about style, colors, cards, or diagram choices — those are fixed by this skill.
 
 Slide count: derive from the request ("大約 15 頁" → 13–17 defensible; "15 頁" → 15;
 duration → estimate by presentation type). Never default to 15. Record both
 User Requested and Actual Planned counts in the outline.
 
+Then apply the resolved mode from `references/cost-control-workflow.md`:
+
+- `standard` with a clear direction and `strict` with a clear direction: create a
+  one-line Direction Lock from the prompt and proceed to Step 3.
+- `standard` with an unclear direction, or `explore`: invoke the planner role for a
+  Narrative Fork task. It reads the evidence pack and writes exactly three compact
+  axes to `presentation/narrative-forks.md` using
+  `templates/narrative-forks-template.md`. Do not write multiple outlines.
+
+### Narrative Fork checkpoint — Select the direction (conditional hard pause)
+
+Present the three axes with their thesis, best-fit audience/use case, high-level flow,
+evidence basis, and main trade-off. Point to `presentation/narrative-forks.md`, then
+end the turn and wait for the user's own reply. Do not invoke the outline task yet.
+
+- Accept one axis, a named combination, or a precise replacement direction.
+- Convert the user's choice into a one-line Direction Lock and proceed to Step 3.
+- If the user rejects all axes without a precise replacement, revise only
+  `narrative-forks.md` and re-present this checkpoint.
+
 ### Step 3 — Run the planner role
 
 Read `references/ppt-planner-role.md`. If the client supports isolated subagents,
 delegate that role with the current user request, target slide count, `SKILL_DIR`, and
-the path to `presentation/evidence/manifest.md`. Otherwise perform the same role inline.
+the path to `presentation/evidence/manifest.md`, resolved cost mode, and Direction
+Lock. Otherwise perform the same role inline.
 The planner reads every
 `presentation/evidence/sources/*.md` file in full, then reads `references/style-guide.md`,
 `references/title-philosophy.md`, and `references/information-visualization.md`, then
@@ -161,6 +201,12 @@ that reads as "answer these and I'll keep going," not "review your outline." If 
 preferences worth confirming (chapter weighting, naming, links, etc.), write them as plain
 questions inside the summary and let the user answer them freely in their next message.
 Only the user's next message resumes the workflow.
+
+This checkpoint is mandatory in every mode. A prior approval becomes invalid when the
+narrative thesis changes, a major section is added/removed/reordered, or slides are
+added/removed. Rewrite the outline and present the full checkpoint again after any
+such change. Typo fixes and wording-only edits that preserve meaning, order, and slide
+count do not invalidate approval.
 
 - If the user requests changes, run the planner role again (outline only — no
   building), update `outline.md`, and re-present this checkpoint.
@@ -225,6 +271,16 @@ numbers, and render only those previews. Pass a selection such as `"3,7-9"` as t
 fourth argument to `render_pptx.sh`, or as `-Slides "3,7-9"` to
 `render_ppt_com.ps1`.
 
+Before builder work, enforce the edit-impact result. A narrative restructure returns
+to Narrative Fork unless the user supplied a precise replacement direction; in that
+case rewrite only `outline.md`. Any revised outline must pass Checkpoint 1 again.
+Evaluate `full-rebuild-candidate` independently from the primary classification using
+the authoritative triggers in `references/cost-control-workflow.md`. When present,
+present `edit-impact.md`, recommend the rollback stage, and hard-pause for the required
+confirmation. If narrative restructure also applies, complete both gates in the order
+defined by that reference. Do not invoke the builder until every applicable gate has
+passed.
+
 Then refresh the full contact sheet. Inspect the affected slides plus the contact sheet;
 if a shared primitive, theme token, or slide ordering changed, render and inspect the full
 deck instead. Never hand-patch the `.pptx` binary.
@@ -239,7 +295,9 @@ subsequent slide-level requests are localized edits (Step 0 → 4-edit).
 
 ```
 presentation/
+├── narrative-forks.md          # conditional pre-outline narrative alternatives
 ├── outline.md                  # presentation intermediate representation (source of truth)
+├── edit-impact.md              # non-small existing-deck changes only
 ├── evidence/                   # hashed, cached source evidence pack
 │   ├── manifest.md
 │   ├── manifest.json
@@ -258,15 +316,18 @@ Never overwrite original source materials.
 
 | Situation | Read |
 |---|---|
+| Resolve mode, narrative exploration, or edit impact | `references/cost-control-workflow.md` |
 | Every new presentation (planner) | `references/style-guide.md`, `references/title-philosophy.md`, `references/information-visualization.md` |
 | Every new presentation (source grounding) | `presentation/evidence/manifest.md` and every `presentation/evidence/sources/*.md` |
 | Before PPTX implementation (builder) | `references/pptx-generation-rules.md`, `references/style-guide.md` |
 | Before modifying an existing deck (builder) | `references/localized-edit-principle.md` |
 | Writing the outline (planner) | `templates/outline-template.md`, `examples/outline-example.md` |
+| Writing narrative forks or edit impact | `templates/narrative-forks-template.md`, `templates/edit-impact-template.md` |
 
 ## Role separation
 
-- Planner role: follow `references/ppt-planner-role.md`; produce only `outline.md`.
+- Planner role: follow `references/ppt-planner-role.md`; produce either
+  `narrative-forks.md` or `outline.md` in one invocation, never both.
 - Builder role: follow `references/ppt-builder-role.md`; implement only the approved outline.
 
 Keep these roles separate even when one agent performs both. Plan fully, write and

@@ -15,7 +15,7 @@ AGENT_ROLE_SPECS = {
     "ppt-builder": "ppt-builder-role.md",
 }
 AGENT_DESCRIPTIONS = {
-    "ppt-planner": "Plan new make-ppt presentations from source evidence and write presentation/outline.md.",
+    "ppt-planner": "Compare narrative directions or write an approved-direction outline from source evidence for make-ppt presentations.",
     "ppt-builder": "Implement an approved make-ppt outline as an editable PPTX and perform visual QA.",
 }
 GENERATED_MARKER = (

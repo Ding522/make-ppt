@@ -94,7 +94,7 @@ class InstallTests(unittest.TestCase):
                 ".codex/agents/ppt-builder.toml": 'name = "ppt-builder"',
                 ".kiro/agents/ppt-planner.md": "name: ppt-planner",
                 ".kiro/agents/ppt-builder.md": "name: ppt-builder",
-                ".github/agents/ppt-planner.agent.md": "description: Plan new",
+                ".github/agents/ppt-planner.agent.md": "description: Compare narrative",
                 ".github/agents/ppt-builder.agent.md": "description: Implement an approved",
             }
             for relative_path, marker in expected.items():

@@ -9,6 +9,87 @@ SKILL_DIR = REPO_DIR / "skill" / "make-ppt"
 
 
 class SkillPolicyTests(unittest.TestCase):
+    def test_cost_modes_are_explicit_and_direction_clarity_does_not_imply_strict(self) -> None:
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        policy = (
+            SKILL_DIR / "references" / "cost-control-workflow.md"
+        ).read_text(encoding="utf-8")
+        outline = (SKILL_DIR / "templates" / "outline-template.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("`standard` is the default", policy)
+        self.assertIn("A clear prompt never activates `strict`", policy)
+        self.assertIn("at least two of these three fields", policy)
+        self.assertIn("`explore` and `strict` require explicit user intent", skill)
+        self.assertIn("- Cost Mode:", outline)
+        self.assertIn("- Direction Lock:", outline)
+
+    def test_narrative_fork_is_compact_conditional_and_hard_paused(self) -> None:
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        policy = (
+            SKILL_DIR / "references" / "cost-control-workflow.md"
+        ).read_text(encoding="utf-8")
+        template = (
+            SKILL_DIR / "templates" / "narrative-forks-template.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("conditional hard pause", skill)
+        self.assertIn("exactly three compact narrative", policy)
+        self.assertIn("Do not write three outlines", policy)
+        self.assertIn("## Axis A", template)
+        self.assertIn("## Axis B", template)
+        self.assertIn("## Axis C", template)
+        self.assertIn("Stop and wait", template)
+
+    def test_outline_approval_is_mandatory_and_invalidated_by_structural_changes(self) -> None:
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        policy = (
+            SKILL_DIR / "references" / "cost-control-workflow.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("This checkpoint is mandatory in every mode", skill)
+        self.assertIn("No mode may skip this checkpoint", policy)
+        self.assertIn("slides are added or removed", policy)
+        self.assertIn("do not invalidate approval", policy)
+
+    def test_non_small_edits_get_impact_record_and_rebuild_confirmation(self) -> None:
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        policy = (
+            SKILL_DIR / "references" / "cost-control-workflow.md"
+        ).read_text(encoding="utf-8")
+        localized = (
+            SKILL_DIR / "references" / "localized-edit-principle.md"
+        ).read_text(encoding="utf-8")
+        template = (
+            SKILL_DIR / "templates" / "edit-impact-template.md"
+        ).read_text(encoding="utf-8")
+        readme = (REPO_DIR / "README.md").read_text(encoding="utf-8")
+
+        for classification in (
+            "small-localized",
+            "single-slide-structural",
+            "cross-slide",
+            "narrative-restructure",
+            "full-rebuild-candidate",
+        ):
+            self.assertIn(classification, policy)
+
+        self.assertIn("affected slides exceed 30%", policy)
+        self.assertIn("shared theme tokens or shared primitives", policy)
+        self.assertIn("`確認 full rebuild`", policy)
+        self.assertIn("an additional flag, not a replacement", policy)
+        self.assertIn("enforce both\ngates", policy)
+        self.assertIn("re-present the outline checkpoint", localized)
+        self.assertNotIn("affected slides exceed 30%", skill)
+        self.assertNotIn("30% of slides", localized)
+        self.assertIn("- Why Localized Edit Is Insufficient:", template)
+        self.assertIn("- Recommended Rollback Stage:", template)
+        self.assertIn("- Cost / Risk Note:", template)
+        self.assertIn("append + full-rebuild-candidate", template)
+        self.assertIn("slide\nadditions/removals invalidate", readme)
+        self.assertNotIn("slide-count changes", readme)
+
     def test_takeaway_is_default_off_without_reserved_space(self) -> None:
         planner = (SKILL_DIR / "references" / "ppt-planner-role.md").read_text(
             encoding="utf-8"

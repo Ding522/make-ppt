@@ -1,4 +1,4 @@
 name: ppt-planner
-description: Plan new make-ppt presentations from source evidence, design the narrative, and write presentation/outline.md. Never generate the PPTX or implementation code.
+description: Compare narrative directions or write an approved-direction outline from source evidence for make-ppt presentations. Never generate the PPTX or implementation code.
 model: inherit
 tools: Read, Grep, Glob, Bash, Write

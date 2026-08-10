@@ -12,6 +12,8 @@ mechanism slide). Real outlines specify every slide at this level.
 
 - Working Title: 內部 MCP 統一認證 — 從 Token 明碼到 Device Flow
 - User Request: 幫我根據這些素材製作一份內部技術分享簡報，大約 10 頁，重點放在 MCP 認證治理
+- Cost Mode: standard
+- Direction Lock: 對內部工程團隊說明 MCP 認證治理的必要性，並以統一認證閘道作為採用主張
 - Audience: 公司內部後端 / DevOps 工程師（依 user request 明示「內部技術分享」與素材中的內部系統名稱推定）
 - Presentation Goal: 說服工程團隊採用統一認證閘道接入內部 MCP
 - Presentation Context: 部門技術分享，約 25 分鐘

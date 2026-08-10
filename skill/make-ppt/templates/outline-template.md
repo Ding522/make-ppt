@@ -14,6 +14,8 @@ filler. The exact Markdown may evolve, but the semantic fields must be preserved
 
 - Working Title:
 - User Request: <verbatim current user request>
+- Cost Mode: <standard / explore / strict>
+- Direction Lock: <approved narrative axis, or the clear prompt direction that skipped Narrative Fork>
 - Audience: <inferred defensibly from request + sources; never invented against evidence>
 - Presentation Goal:
 - Presentation Context: <venue/occasion>
