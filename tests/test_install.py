@@ -11,6 +11,10 @@ from pathlib import Path
 REPO_DIR = Path(__file__).resolve().parents[1]
 INSTALLER = REPO_DIR / "install.py"
 SKILL_SOURCE = REPO_DIR / "skill" / "make-ppt"
+BASH_ENTRYPOINTS = (
+    "skill/make-ppt/scripts/run_python.sh",
+    "skill/make-ppt/scripts/render_pptx.sh",
+)
 
 
 def run_installer(project_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -31,6 +35,18 @@ def run_installer(project_dir: Path, *args: str) -> subprocess.CompletedProcess[
 
 
 class InstallTests(unittest.TestCase):
+    def test_bash_entrypoints_are_tracked_as_executable(self) -> None:
+        for relative_path in BASH_ENTRYPOINTS:
+            tracked = subprocess.run(
+                ["git", "ls-files", "--stage", "--", relative_path],
+                cwd=REPO_DIR,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+            mode = tracked.split(maxsplit=1)[0]
+            self.assertEqual("100755", mode, relative_path)
+
     def test_claude_install_generates_agents_from_canonical_roles(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             project_dir = Path(temporary)
