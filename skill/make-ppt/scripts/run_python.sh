@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # run_python.sh <script.py> [args...]
-# Run a Python 3 script with the first WORKING interpreter.
+# Run a Python 3.9+ script with the first WORKING interpreter.
 # Why this exists: on Windows the Microsoft Store ships a fake `python3` shim that
 # sits on PATH and exits 49 without running anything. WSL may also expose a Linux
 # Python that lacks the Windows-side presentation dependencies. Detection must
@@ -9,14 +9,14 @@ set -euo pipefail
 
 PY=""
 for c in python.exe py.exe python3 python py; do
-  if v="$("$c" -c 'import sys;print(sys.version_info[0])' 2>/dev/null | tr -d '\r')" && [ "$v" = "3" ]; then
+  if "$c" -c 'import sys;raise SystemExit(0 if sys.version_info >= (3,9) else 1)' >/dev/null 2>&1; then
     PY="$c"; break
   fi
 done
 
 if [ -z "$PY" ]; then
-  echo "ERROR: no working Python 3 interpreter found (tried python.exe, py.exe, python3, python, py)." >&2
-  echo "  Install Python 3 and ensure it is on PATH, then retry." >&2
+  echo "ERROR: no working Python 3.9+ interpreter found (tried python.exe, py.exe, python3, python, py)." >&2
+  echo "  Install Python 3.9 or newer and ensure it is on PATH, then retry." >&2
   exit 1
 fi
 

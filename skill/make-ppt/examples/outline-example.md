@@ -17,7 +17,7 @@ mechanism slide). Real outlines specify every slide at this level.
 - Audience: 公司內部後端 / DevOps 工程師（依 user request 明示「內部技術分享」與素材中的內部系統名稱推定）
 - Presentation Goal: 說服工程團隊採用統一認證閘道接入內部 MCP
 - Presentation Context: 部門技術分享，約 25 分鐘
-- Language: 繁體中文（保留自然英文技術詞）
+- Language: 台灣繁體中文（zh-TW；保留自然英文技術詞）
 - Expected Duration: 25 min
 - User Requested Slide Count: 大約 10
 - Actual Planned Slide Count: 10

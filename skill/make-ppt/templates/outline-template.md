@@ -19,7 +19,7 @@ filler. The exact Markdown may evolve, but the semantic fields must be preserved
 - Audience: <inferred defensibly from request + sources; never invented against evidence>
 - Presentation Goal:
 - Presentation Context: <venue/occasion>
-- Language: 繁體中文（保留自然英文技術詞）
+- Language: 台灣繁體中文（zh-TW；保留自然英文技術詞）
 - Expected Duration:
 - User Requested Slide Count:
 - Actual Planned Slide Count:
@@ -102,7 +102,8 @@ builder sets this as `DECK_CONTEXT` in theme.py.>
 
 ## Global Content Constraints
 
-- Visible content in Traditional Chinese; keep natural technical English (token,
+- Visible content in Taiwan Traditional Chinese (`zh-TW`); follow
+  `taiwan-language-guide.md` and keep natural technical English (token,
   scope, audience, Device Flow, PKCE, CI, PR, gateway, code review, schema…).
 - No marketing slogans, decorative filler, or vague vision statements.
 - Prefer concrete nouns, active verbs, evidence.

@@ -7,6 +7,8 @@ import tomllib
 import unittest
 from pathlib import Path
 
+from client_registry import agent_target, load_registry, skill_target
+
 
 REPO_DIR = Path(__file__).resolve().parents[1]
 INSTALLER = REPO_DIR / "install.py"
@@ -102,6 +104,20 @@ class InstallTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             project_dir = Path(temporary)
             run_installer(project_dir, "--client", "all")
+            registry = load_registry(REPO_DIR / "integrations" / "clients.json")
+
+            for spec in registry.values():
+                self.assertTrue(
+                    (skill_target(spec, "project", project_dir) / "SKILL.md").is_file(),
+                    spec.client_id,
+                )
+                for agent_name in ("ppt-planner", "ppt-builder"):
+                    self.assertTrue(
+                        agent_target(
+                            spec, agent_name, "project", project_dir
+                        ).is_file(),
+                        f"{spec.client_id}:{agent_name}",
+                    )
 
             expected = {
                 ".claude/agents/ppt-planner.md": "name: ppt-planner",
@@ -112,6 +128,8 @@ class InstallTests(unittest.TestCase):
                 ".kiro/agents/ppt-builder.md": "name: ppt-builder",
                 ".github/agents/ppt-planner.agent.md": "description: Compare narrative",
                 ".github/agents/ppt-builder.agent.md": "description: Implement an approved",
+                ".agents/agents/ppt-planner/agent.md": "name: ppt-planner",
+                ".agents/agents/ppt-builder/agent.md": "name: ppt-builder",
             }
             for relative_path, marker in expected.items():
                 generated = (project_dir / relative_path).read_text(encoding="utf-8")
@@ -122,6 +140,8 @@ class InstallTests(unittest.TestCase):
                 (".kiro/agents/ppt-builder.md", "ppt-builder-role.md"),
                 (".github/agents/ppt-planner.agent.md", "ppt-planner-role.md"),
                 (".github/agents/ppt-builder.agent.md", "ppt-builder-role.md"),
+                (".agents/agents/ppt-planner/agent.md", "ppt-planner-role.md"),
+                (".agents/agents/ppt-builder/agent.md", "ppt-builder-role.md"),
             ):
                 generated = (project_dir / relative_path).read_text(encoding="utf-8")
                 role = (SKILL_SOURCE / "references" / role_name).read_text(
@@ -152,6 +172,74 @@ class InstallTests(unittest.TestCase):
             self.assertIn("ppt-planner.md", result.stdout)
             self.assertIn("ppt-builder.md", result.stdout)
             self.assertFalse((project_dir / ".claude").exists())
+
+    def test_registry_drives_client_paths_and_includes_antigravity(self) -> None:
+        registry = load_registry(REPO_DIR / "integrations" / "clients.json")
+        self.assertTrue(
+            {"codex", "claude", "kiro", "copilot", "antigravity"}.issubset(
+                registry
+            )
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            project_dir = Path(temporary)
+            antigravity = registry["antigravity"]
+            self.assertEqual(
+                project_dir / ".agents" / "skills" / "make-ppt",
+                skill_target(antigravity, "project", project_dir),
+            )
+            self.assertEqual(
+                project_dir / ".agents" / "agents" / "ppt-planner" / "agent.md",
+                agent_target(antigravity, "ppt-planner", "project", project_dir),
+            )
+        for spec in registry.values():
+            if spec.agent_format == "markdown":
+                for agent_name in ("ppt-planner", "ppt-builder"):
+                    self.assertTrue(
+                        (
+                            REPO_DIR
+                            / "integrations"
+                            / spec.integration_dir
+                            / f"{agent_name}.yaml"
+                        ).is_file(),
+                        f"missing {spec.client_id} template for {agent_name}",
+                    )
+
+    def test_legacy_installation_is_backed_up_only_when_requested(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project_dir = Path(temporary)
+            legacy = project_dir / ".codex" / "skills" / "make-ppt"
+            legacy.mkdir(parents=True)
+            (legacy / "SKILL.md").write_text("legacy\n", encoding="utf-8")
+
+            warning = run_installer(
+                project_dir, "--client", "codex", "--dry-run"
+            ).stdout
+            self.assertIn("legacy skill found", warning)
+            self.assertTrue(legacy.is_dir())
+
+            run_installer(
+                project_dir, "--client", "codex", "--migrate-legacy"
+            )
+            self.assertFalse(legacy.exists())
+            backups = list(legacy.parent.glob("make-ppt.legacy-*"))
+            self.assertEqual(1, len(backups))
+            self.assertEqual(
+                "legacy\n",
+                (backups[0] / "SKILL.md").read_text(encoding="utf-8"),
+            )
+
+    def test_dependency_install_option_is_explicit_and_dry_runnable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project_dir = Path(temporary)
+            result = run_installer(
+                project_dir,
+                "--client",
+                "antigravity",
+                "--install-python-deps",
+                "--dry-run",
+            )
+            self.assertIn("python-deps ->", result.stdout)
+            self.assertIn("requirements.txt", result.stdout)
 
 
 if __name__ == "__main__":

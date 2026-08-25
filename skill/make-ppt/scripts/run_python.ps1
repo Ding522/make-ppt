@@ -1,5 +1,5 @@
 <#
-Run a Python script or command with the first working Python 3 interpreter.
+Run a Python script or command with the first working Python 3.9+ interpreter.
 
 Usage:
   powershell -NoProfile -ExecutionPolicy Bypass -File run_python.ps1 script.py arg1
@@ -29,7 +29,7 @@ foreach ($candidate in $candidates) {
     continue
   }
 
-  & $command.Source @($candidate.Prefix) -c "import sys; raise SystemExit(0 if sys.version_info.major == 3 else 1)" 2>$null
+  & $command.Source @($candidate.Prefix) -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)" 2>$null
   if ($LASTEXITCODE -ne 0) {
     continue
   }
@@ -38,5 +38,5 @@ foreach ($candidate in $candidates) {
   exit $LASTEXITCODE
 }
 
-Write-Error "No working Python 3 interpreter found. Tried py -3, python, and python3."
+Write-Error "No working Python 3.9+ interpreter found. Tried py -3, python, and python3."
 exit 1

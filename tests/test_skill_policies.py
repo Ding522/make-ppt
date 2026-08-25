@@ -152,6 +152,32 @@ class SkillPolicyTests(unittest.TestCase):
         self.assertIn("`Noto Sans TC`", rules)
         self.assertIn("`Consolas`", rules)
 
+    def test_visible_copy_uses_taiwan_traditional_chinese(self) -> None:
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        planner = (SKILL_DIR / "references" / "ppt-planner-role.md").read_text(
+            encoding="utf-8"
+        )
+        builder = (SKILL_DIR / "references" / "ppt-builder-role.md").read_text(
+            encoding="utf-8"
+        )
+        guide = (SKILL_DIR / "references" / "taiwan-language-guide.md").read_text(
+            encoding="utf-8"
+        )
+        outline = (SKILL_DIR / "templates" / "outline-template.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("Taiwan Traditional Chinese (`zh-TW`)", skill)
+        self.assertIn("`references/taiwan-language-guide.md`", planner)
+        self.assertIn("`references/taiwan-language-guide.md`", builder)
+        self.assertIn("按兩下", guide)
+        self.assertIn("Software options → `設定`", guide)
+        self.assertIn("official product/UI labels", guide)
+        self.assertIn("verbatim source quotations", guide)
+        self.assertIn("台灣繁體中文（zh-TW", outline)
+        self.assertIn("scripts/lint_zh_tw.py", skill)
+        self.assertIn("checker never rewrites content", guide)
+
 
 if __name__ == "__main__":
     unittest.main()

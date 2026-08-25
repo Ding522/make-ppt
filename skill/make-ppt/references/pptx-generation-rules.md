@@ -15,12 +15,11 @@ Evaluated against PptxGenJS for this skill's needs:
 **Decision: python-pptx**, primarily for robust mixed-format text runs (the title
 emphasis mechanism is the core of this style) and fewer file-corruption footguns.
 At runtime, use the bundled `scripts/run_python.sh` from Bash/WSL/Git Bash or
-`scripts/run_python.ps1` from PowerShell. Both select a real Python 3 interpreter.
+`scripts/run_python.ps1` from PowerShell. Both select a real Python 3.9+ interpreter.
 Check that `import pptx` succeeds; if unavailable, install `python-pptx` using the
-active environment's package-management policy;
-if Python itself is unavailable but Node is, fall back to PptxGenJS and document the
-substitution in `presentation/src/README` — the primitives must then be ported, not
-skipped.
+active environment's package-management policy. The canonical Python dependencies are
+listed in the bundled `requirements.txt`; do not silently switch generation runtimes,
+because the validated primitives and structural QA depend on python-pptx.
 
 ## Source layout (maintained generation source)
 
@@ -34,8 +33,9 @@ presentation/src/
 
 Copy the validated starter from the skill's `assets/src-template/`. Centralize every
 constant in `theme.py` — never redefine colors/sizes in slide code. Create primitives
-for repeated grammar; avoid excessive abstraction — this is a personal skill, not a
-universal framework. Never overwrite the user's original source materials.
+for repeated grammar; avoid excessive abstraction — this is a portable skill with one
+fixed presentation grammar, not a general-purpose presentation framework. Never
+overwrite the user's original source materials.
 
 The builder works from `presentation/outline.md` and the source assets it names. The
 planner owns complete evidence reading; do not spend builder context re-reading the

@@ -26,7 +26,7 @@ At activation:
 3. Resolve every bundled `references/`, `templates/`, `examples/`, `assets/`, and
    `scripts/` path relative to `SKILL_DIR`. Never pass the literal text `SKILL_DIR`
    or `<skill>` to a command.
-4. Require file read/write access and a working Python 3 interpreter. Rendering uses
+4. Require file read/write access and a working Python 3.9+ interpreter. Rendering uses
    Microsoft PowerPoint on Windows, Microsoft PowerPoint plus Poppler on macOS, or
    LibreOffice plus Poppler as the portable fallback. If a required capability is
    unavailable, report the missing capability and the unfinished stage precisely.
@@ -55,7 +55,12 @@ At activation:
    Never flatten slides into images. Only source screenshots/photos stay raster.
 4. Never invent facts: no fabricated KPIs, percentages, dates, milestones, components,
    or outcomes. Source-grounded content only (see planner instructions).
-5. Visible slide content in Traditional Chinese, keeping natural technical English terms.
+5. Visible slide content in **Taiwan Traditional Chinese (`zh-TW`)**, keeping natural
+   technical English terms. Traditional characters alone are insufficient: use wording
+   natural to Taiwan and follow `references/taiwan-language-guide.md` (for example,
+   UI actions use `按兩下`, not `雙擊`; software configuration usually uses `設定`,
+   not a blind use of `配置`). Preserve official UI labels, verbatim quotations, and
+   explicit project terminology as defined by that guide.
    **Register: an engineer sharing findings with 同仁 — never a hosted session.** Plain
    declarative statements; no welcoming/thanking/transition lines, no crowd address
    (各位 / 大家), no session framing (全場主軸 / 壓軸 / 開場), no teasers that withhold a
@@ -81,6 +86,10 @@ At activation:
 12. Classify every modification before editing. Non-small changes require
     `presentation/edit-impact.md`; full rebuild triggers require the exact user reply
     `確認 full rebuild` before rebuilding.
+13. Before Checkpoint 1 and final reporting, run the bundled read-only Taiwan
+    terminology checker on newly written visible content. Resolve high-confidence
+    findings; review contextual findings without blind replacement. Official UI labels,
+    quotations, code, commands, paths, identifiers, and URLs may be explicitly allowed.
 
 ## Orchestration workflow
 
@@ -119,7 +128,7 @@ XLSX (read actual sheet values — these are the only legitimate source of numbe
 ### Step 1a — Build or reuse the source evidence pack
 
 After discovering sources, execute the bundled `scripts/build_evidence_pack.py` with
-arguments `.` and `presentation/evidence`, using a working Python 3 interpreter. Use
+arguments `.` and `presentation/evidence`, using a working Python 3.9+ interpreter. Use
 `scripts/run_python.sh` from Bash/WSL/Git Bash or `scripts/run_python.ps1` from
 PowerShell when interpreter discovery is needed.
 
@@ -171,7 +180,8 @@ the path to `presentation/evidence/manifest.md`, resolved cost mode, and Directi
 Lock. Otherwise perform the same role inline.
 The planner reads every
 `presentation/evidence/sources/*.md` file in full, then reads `references/style-guide.md`,
-`references/title-philosophy.md`, and `references/information-visualization.md`, then
+`references/title-philosophy.md`, `references/taiwan-language-guide.md`, and
+`references/information-visualization.md`, then
 writes `presentation/outline.md` following `templates/outline-template.md`
 (realistic example: `examples/outline-example.md`).
 
@@ -184,6 +194,10 @@ engineering language: concrete nouns, active verbs, specific friction and trade-
 never add unsupported people, emotions, outcomes, or generic AI-sounding filler.
 
 The planner must NOT generate the PPTX or write generation code.
+
+Before presenting Checkpoint 1, run `scripts/lint_zh_tw.py` against
+`presentation/outline.md` with `--outline-visible-only`. Resolve high-confidence
+findings and review contextual findings.
 
 ### Checkpoint 1 — Confirm the outline (hard pause)
 
@@ -224,7 +238,8 @@ perform it inline.
 **style sample only** —
 the cover/title slide plus one representative content slide (the one that best exercises the
 deck's dominant visual grammar). The builder reads `references/pptx-generation-rules.md` and
-`references/style-guide.md`, copies `assets/src-template/` (theme.py / primitives.py /
+`references/style-guide.md`, plus `references/taiwan-language-guide.md`, copies
+`assets/src-template/` (theme.py / primitives.py /
 build.py) into `presentation/src/`, implements just those sample slides as maintainable
 Python (python-pptx), generates a partial `presentation.pptx`, renders their previews, and
 fixes rendering defects. It does NOT build the remaining slides yet.
@@ -259,6 +274,8 @@ sample; it implements every remaining slide (keeping the approved sample slides)
    them — defects only, no subjective redesigns, no infinite loops (max 2 fix passes)
 5. runs `scripts/validate_pptx_structure.py` for every slide whose outline specifies
    a native table, so visual similarity cannot hide a text-box grid
+6. runs `scripts/lint_zh_tw.py` against the completed PPTX and resolves
+   high-confidence wording findings before reporting
 
 The builder must not change any slide's argument, purpose, evidence, or order.
 Fit/alignment/spacing adjustments are allowed. It must preserve the approved slide order
@@ -317,9 +334,9 @@ Never overwrite original source materials.
 | Situation | Read |
 |---|---|
 | Resolve mode, narrative exploration, or edit impact | `references/cost-control-workflow.md` |
-| Every new presentation (planner) | `references/style-guide.md`, `references/title-philosophy.md`, `references/information-visualization.md` |
+| Every new presentation (planner) | `references/style-guide.md`, `references/title-philosophy.md`, `references/taiwan-language-guide.md`, `references/information-visualization.md` |
 | Every new presentation (source grounding) | `presentation/evidence/manifest.md` and every `presentation/evidence/sources/*.md` |
-| Before PPTX implementation (builder) | `references/pptx-generation-rules.md`, `references/style-guide.md` |
+| Before PPTX implementation (builder) | `references/pptx-generation-rules.md`, `references/style-guide.md`, `references/taiwan-language-guide.md` |
 | Before modifying an existing deck (builder) | `references/localized-edit-principle.md` |
 | Writing the outline (planner) | `templates/outline-template.md`, `examples/outline-example.md` |
 | Writing narrative forks or edit impact | `templates/narrative-forks-template.md`, `templates/edit-impact-template.md` |

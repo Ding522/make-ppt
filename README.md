@@ -6,7 +6,7 @@ PowerPoint decks in a fixed engineering editorial style. The canonical package i
 
 ## Install
 
-Install for every supported client in the current user account:
+Install for every client registered in `integrations/clients.json`:
 
 ```powershell
 python .\install.py --client all --scope user
@@ -19,6 +19,7 @@ python .\install.py --client claude --scope user
 python .\install.py --client kiro --scope user
 python .\install.py --client codex --scope user
 python .\install.py --client copilot --scope user
+python .\install.py --client antigravity --scope user
 ```
 
 Install into a project instead of the user profile:
@@ -28,6 +29,12 @@ python .\install.py --client all --scope project --project-dir C:\path\to\projec
 ```
 
 Reinstall an updated version with `--force`. Preview targets first with `--dry-run`.
+Install the bundled Python dependencies only when explicitly requested:
+
+```powershell
+python .\install.py --client all --scope user --install-python-deps
+```
+
 Installation also generates or refreshes the planner and builder agents in each
 client's native agent directory. These files are generated from the canonical role
 references plus client-specific metadata; edit the source files in this repository
@@ -39,15 +46,50 @@ rather than the installed copies.
 | Claude Code | `~/.claude/skills/make-ppt` | `.claude/skills/make-ppt` |
 | Kiro | `~/.kiro/skills/make-ppt` | `.kiro/skills/make-ppt` |
 | GitHub Copilot | `~/.copilot/skills/make-ppt` | `.github/skills/make-ppt` |
+| Google Antigravity | `~/.gemini/config/skills/make-ppt` | `.agents/skills/make-ppt` |
 
 Agent files use these native locations: Codex `~/.codex/agents` / `.codex/agents`,
 Claude `~/.claude/agents` / `.claude/agents`, Kiro `~/.kiro/agents` / `.kiro/agents`,
-and GitHub Copilot `~/.copilot/agents` / `.github/agents`.
+GitHub Copilot `~/.copilot/agents` / `.github/agents`, and Google Antigravity
+`~/.gemini/config/agents/<name>/agent.md` / `.agents/agents/<name>/agent.md`.
+
+Antigravity paths follow its official
+[Skills](https://antigravity.google/docs/skills) and
+[custom agents](https://antigravity.google/docs/cli/commands/agents) documentation.
+Codex and Antigravity intentionally share `.agents/skills` at project scope; the
+installer deduplicates that target while still generating each client's own agents.
+
+Client paths, agent formats, integration directories, metadata overlays, and legacy
+locations have one source of truth: `integrations/clients.json`. Add a client there
+and provide its integration templates instead of adding branches throughout
+`install.py`.
+
+### Diagnose the environment
+
+Run the client-neutral doctor before troubleshooting generation or rendering:
+
+```powershell
+python .\doctor.py --client all --scope user
+python .\doctor.py --client antigravity --scope project --project-dir C:\path\to\project
+```
+
+The doctor checks Python packages, renderer availability, installed skill and agent
+paths, and registered legacy installations. Python requirements are bundled in
+`skill/make-ppt/requirements.txt`. Microsoft PowerPoint, LibreOffice, and Poppler are
+reported but never installed automatically.
+
+Legacy installations are never silently deleted. Preview the migration, then opt in
+to moving them to timestamped backups:
+
+```powershell
+python .\install.py --client all --scope user --dry-run --migrate-legacy
+python .\install.py --client all --scope user --force --migrate-legacy
+```
 
 Other Agent Skills compatible clients can import the canonical
 `skill/make-ppt` folder directly or copy it into their documented skills directory.
 The core skill remains client-neutral; integrations under `integrations/` adapt it to
-native client features such as Codex UI metadata and Claude Code subagents.
+each client's native skill metadata and agent format.
 
 ## Use
 
@@ -55,7 +97,7 @@ Use a client-neutral prompt:
 
 ```text
 Use the make-ppt skill to turn the materials in this folder into a 10-slide
-Traditional Chinese technical presentation.
+Taiwan Traditional Chinese (zh-TW) technical presentation.
 ```
 
 Clients that expose skills as slash commands may also support `/make-ppt`; Codex may
@@ -100,6 +142,16 @@ For existing decks, small edits stay localized. Larger edits create
 theme/primitives, the narrative axis, or major-section order require the explicit
 reply `確認 full rebuild` before rebuilding.
 
-The skill requires file read/write access and Python 3. Rendering uses Microsoft
+The skill requires file read/write access and Python 3.9 or newer. Rendering uses Microsoft
 PowerPoint on Windows, Microsoft PowerPoint plus Poppler on macOS, or LibreOffice plus
 Poppler as the portable fallback.
+
+Taiwan terminology is checked without automatic replacement:
+
+```powershell
+python .\skill\make-ppt\scripts\lint_zh_tw.py presentation\outline.md --outline-visible-only
+python .\skill\make-ppt\scripts\lint_zh_tw.py presentation\presentation.pptx
+```
+
+High-confidence findings fail the check. Context-dependent terms such as `配置` are
+reported for human review, because they can be correct in specific contexts.

@@ -27,7 +27,8 @@ extracted content into the prompt again.
 
 From the make-ppt skill directory: `references/style-guide.md`,
 `references/title-philosophy.md`, `references/information-visualization.md`,
-and `references/cost-control-workflow.md`. For a Narrative Fork task, also read
+`references/taiwan-language-guide.md`, and `references/cost-control-workflow.md`.
+For a Narrative Fork task, also read
 `templates/narrative-forks-template.md`. For an outline task, also read
 `templates/outline-template.md` (structure) and `examples/outline-example.md` (bar
 for specificity).
@@ -113,9 +114,16 @@ For an outline task, follow these responsibilities:
 
 ## Language & tone
 
-Visible slide content: Traditional Chinese with natural English technical terms
+Visible slide content: Taiwan Traditional Chinese (`zh-TW`) with natural English technical terms
 (token, scope, audience-bound token, Device Flow, PKCE, CI, PR, gateway…). No forced
-translations. No marketing slogans (賦能未來 / 引領創新 / 開啟新篇章 / 邁向卓越 and
+translations. Follow `references/taiwan-language-guide.md`; Traditional character
+conversion alone is not localization. Use natural Taiwan software and engineering
+wording, while preserving official UI labels, verbatim quotations, and explicit
+project terminology. Before finishing, run the guide's final language pass over every
+newly written visible string in the planning artifact, then run the bundled
+`scripts/lint_zh_tw.py` against `presentation/outline.md` with
+`--outline-visible-only`. Resolve high-confidence findings before Checkpoint 1; review
+context-dependent findings without applying blind replacements. No marketing slogans (賦能未來 / 引領創新 / 開啟新篇章 / 邁向卓越 and
 kin are banned unless quoted from official source branding). Prefer facts, processes,
 evidence, results, decisions, constraints, and lessons.
 

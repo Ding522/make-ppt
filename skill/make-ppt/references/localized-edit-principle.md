@@ -43,7 +43,7 @@ composition") bind these edits too.
   deck must stay regenerable.
 - If the requested change alters content/argument, also update the corresponding
   Per-Slide Specification in `outline.md` so outline and deck stay in sync.
-- Regenerate `presentation/src/build.py` with a working Python 3 interpreter, using
+- Regenerate `presentation/src/build.py` with a working Python 3.9+ interpreter, using
   the bundled Bash or PowerShell Python wrapper when interpreter discovery is needed.
 - Re-render only affected slides; refresh the contact sheet.
 - Verify in the re-render that untouched slides are byte-for-byte-intent identical

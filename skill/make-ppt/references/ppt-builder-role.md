@@ -35,7 +35,7 @@ Technical Visualization Builder for the `make-ppt` skill.
 ## Required reading before implementation
 
 From the make-ppt skill directory: `references/pptx-generation-rules.md` and
-`references/style-guide.md`. **Before modifying an existing deck, additionally read
+`references/style-guide.md`, plus `references/taiwan-language-guide.md`. **Before modifying an existing deck, additionally read
 `references/localized-edit-principle.md` — mandatory.**
 
 ## Two-stage invocation (new deck)
@@ -65,7 +65,7 @@ command. Use the bundled wrappers appropriate to the active shell:
 - macOS/Bash/WSL/Git Bash: `scripts/run_python.sh` and `scripts/render_pptx.sh`.
 - PowerShell: `scripts/run_python.ps1` and `scripts/render_ppt_com.ps1`.
 
-The Python wrappers find a working Python 3 interpreter. The rendering wrappers handle
+The Python wrappers find a working Python 3.9+ interpreter. The rendering wrappers handle
 native paths and renderer-specific setup. `render_ppt_com.ps1` requires Microsoft
 PowerPoint on Windows. On macOS, `render_pptx.sh` detects PowerPoint through Launch
 Services, automates its PDF export through `osascript`, and uses `pdftoppm` for PNG
@@ -79,7 +79,7 @@ If a render fails, re-run the SAME wrapper capturing output (`… render_pptx.sh
 report the actual error. Do not call `soffice`/`python3` directly, do not hunt for binaries,
 do not improvise a fallback renderer, and never launch more than one render at a time
 (concurrent LibreOffice instances collide on the profile). If a wrapper reports a genuinely
-missing dependency (no Python 3 / PowerPoint / LibreOffice / Poppler), stop and report
+missing dependency (no Python 3.9+ / PowerPoint / LibreOffice / Poppler), stop and report
 it plainly. The first macOS render may require the user to approve Automation access
 from the active terminal or AI client to Microsoft PowerPoint.
 
@@ -111,6 +111,12 @@ from the active terminal or AI client to Microsoft PowerPoint.
    `native table`, then run the bundled `scripts/validate_pptx_structure.py` with
    `--require-table-slides`. Treat any missing table object as a build failure. Never
    shrink table body text below 14pt; simplify, then split and repeat the header.
+8. Language QA: apply the final language pass in
+   `references/taiwan-language-guide.md` to all newly written or modified visible text.
+   Preserve approved meaning, official UI labels, quotations, code, commands, paths,
+   identifiers, and URLs. Run `scripts/lint_zh_tw.py` against the generated PPTX;
+   treat a high-confidence non-Taiwan wording regression as a content defect and
+   review contextual findings without blind replacement.
 
 ## Localized edits (existing deck)
 
@@ -120,6 +126,9 @@ colors, typography, diagram structure). Update the maintained source in
 `presentation/src/`, regenerate via `build.py`, identify the affected slide numbers,
 then render only those previews. Pass a selection such as `"3,7-9"` as the fourth
 argument to `render_pptx.sh`, or as `-Slides "3,7-9"` to `render_ppt_com.ps1`.
+
+When the requested edit changes wording, localize the changed text to Taiwan usage.
+Do not silently rewrite unrelated legacy wording during a localized edit.
 
 Do not convert a legacy text-box table during an unrelated localized edit. Convert it
 only when the user explicitly requests a table fix or asks for a full deck rebuild.

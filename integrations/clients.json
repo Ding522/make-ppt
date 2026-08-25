@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "clients": {
+    "codex": {
+      "display_name": "Codex",
+      "skill_roots": {"user": ".agents/skills", "project": ".agents/skills"},
+      "agent_roots": {"user": ".codex/agents", "project": ".codex/agents"},
+      "agent_path": "{agent_name}.toml",
+      "agent_format": "codex-toml",
+      "integration_dir": "codex",
+      "skill_metadata": {"source": "codex/openai.yaml", "target": "agents/openai.yaml"},
+      "legacy_skill_roots": {"user": [".codex/skills"], "project": [".codex/skills"]}
+    },
+    "claude": {
+      "display_name": "Claude Code",
+      "skill_roots": {"user": ".claude/skills", "project": ".claude/skills"},
+      "agent_roots": {"user": ".claude/agents", "project": ".claude/agents"},
+      "agent_path": "{agent_name}.md",
+      "agent_format": "markdown",
+      "integration_dir": "claude",
+      "legacy_skill_roots": {"user": [], "project": []}
+    },
+    "kiro": {
+      "display_name": "Kiro",
+      "skill_roots": {"user": ".kiro/skills", "project": ".kiro/skills"},
+      "agent_roots": {"user": ".kiro/agents", "project": ".kiro/agents"},
+      "agent_path": "{agent_name}.md",
+      "agent_format": "markdown",
+      "integration_dir": "kiro",
+      "legacy_skill_roots": {"user": [], "project": []}
+    },
+    "copilot": {
+      "display_name": "GitHub Copilot",
+      "skill_roots": {"user": ".copilot/skills", "project": ".github/skills"},
+      "agent_roots": {"user": ".copilot/agents", "project": ".github/agents"},
+      "agent_path": "{agent_name}.agent.md",
+      "agent_format": "markdown",
+      "integration_dir": "copilot",
+      "legacy_skill_roots": {"user": [], "project": []}
+    },
+    "antigravity": {
+      "display_name": "Google Antigravity",
+      "skill_roots": {"user": ".gemini/config/skills", "project": ".agents/skills"},
+      "agent_roots": {"user": ".gemini/config/agents", "project": ".agents/agents"},
+      "agent_path": "{agent_name}/agent.md",
+      "agent_format": "markdown",
+      "integration_dir": "antigravity",
+      "legacy_skill_roots": {"user": [".gemini/skills"], "project": [".agent/skills"]}
+    }
+  }
+}

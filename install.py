@@ -6,10 +6,20 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
+import sys
+from datetime import datetime
 from pathlib import Path
 
+from client_registry import (
+    ClientSpec,
+    agent_target,
+    legacy_skill_targets,
+    load_registry,
+    skill_target,
+)
 
-CLIENTS = ("codex", "claude", "kiro", "copilot")
+
 AGENT_ROLE_SPECS = {
     "ppt-planner": "ppt-planner-role.md",
     "ppt-builder": "ppt-builder-role.md",
@@ -24,15 +34,15 @@ GENERATED_MARKER = (
 )
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(registry: dict[str, ClientSpec]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Install make-ppt into Agent Skills compatible AI clients."
     )
     parser.add_argument(
         "--client",
-        choices=(*CLIENTS, "all"),
+        choices=(*registry, "all"),
         default="all",
-        help="Client to install for (default: all).",
+        help="Client to install for (default: all registered clients).",
     )
     parser.add_argument(
         "--scope",
@@ -56,49 +66,22 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Print target paths without writing files.",
     )
+    parser.add_argument(
+        "--migrate-legacy",
+        action="store_true",
+        help="Move registered legacy installations to timestamped backups after installing.",
+    )
+    parser.add_argument(
+        "--install-python-deps",
+        action="store_true",
+        help="Install the bundled Python requirements with the active interpreter.",
+    )
     return parser.parse_args()
 
 
-def user_target(client: str) -> Path:
-    roots = {
-        "codex": Path.home() / ".agents" / "skills",
-        "claude": Path.home() / ".claude" / "skills",
-        "kiro": Path.home() / ".kiro" / "skills",
-        "copilot": Path.home() / ".copilot" / "skills",
-    }
-    return roots[client] / "make-ppt"
-
-
-def project_target(client: str, project_dir: Path) -> Path:
-    roots = {
-        "codex": project_dir / ".agents" / "skills",
-        "claude": project_dir / ".claude" / "skills",
-        "kiro": project_dir / ".kiro" / "skills",
-        "copilot": project_dir / ".github" / "skills",
-    }
-    return roots[client] / "make-ppt"
-
-
-def agents_dir(client: str, scope: str, project_dir: Path) -> Path:
-    if scope == "user":
-        roots = {
-            "codex": Path.home() / ".codex" / "agents",
-            "claude": Path.home() / ".claude" / "agents",
-            "kiro": Path.home() / ".kiro" / "agents",
-            "copilot": Path.home() / ".copilot" / "agents",
-        }
-    else:
-        roots = {
-            "codex": project_dir / ".codex" / "agents",
-            "claude": project_dir / ".claude" / "agents",
-            "kiro": project_dir / ".kiro" / "agents",
-            "copilot": project_dir / ".github" / "agents",
-        }
-    return roots[client]
-
-
-def safe_to_replace(target: Path) -> bool:
-    return target.name == "make-ppt" and target.parent.name == "skills"
+def safe_skill_target(target: Path) -> bool:
+    resolved = target.resolve()
+    return resolved.name == "make-ppt" and resolved.parent.name == "skills"
 
 
 def render_markdown_agent(frontmatter: Path, role: Path) -> str:
@@ -136,27 +119,18 @@ def render_codex_agent(agent_name: str, role: Path) -> str:
     )
 
 
-def agent_file_name(client: str, agent_name: str) -> str:
-    suffix = {
-        "codex": ".toml",
-        "claude": ".md",
-        "kiro": ".md",
-        "copilot": ".agent.md",
-    }[client]
-    return f"{agent_name}{suffix}"
-
-
 def sync_agents(
-    client: str,
+    spec: ClientSpec,
     skill_source: Path,
     integrations_dir: Path,
-    target_dir: Path,
+    scope: str,
+    project_dir: Path,
     *,
     dry_run: bool,
 ) -> None:
     for agent_name, role_name in AGENT_ROLE_SPECS.items():
-        target = target_dir / agent_file_name(client, agent_name)
-        print(f"{client}-agent -> {target}")
+        target = agent_target(spec, agent_name, scope, project_dir)
+        print(f"{spec.client_id}-agent -> {target}")
         if dry_run:
             continue
 
@@ -164,37 +138,35 @@ def sync_agents(
         if not role.is_file():
             raise FileNotFoundError(f"Canonical role not found: {role}")
 
-        if client == "codex":
+        if spec.agent_format == "codex-toml":
             content = render_codex_agent(agent_name, role)
         else:
-            frontmatter = integrations_dir / client / f"{agent_name}.yaml"
+            frontmatter = (
+                integrations_dir / spec.integration_dir / f"{agent_name}.yaml"
+            )
             if not frontmatter.is_file():
                 raise FileNotFoundError(
-                    f"{client} agent template not found: {frontmatter}"
+                    f"{spec.client_id} agent template not found: {frontmatter}"
                 )
             content = render_markdown_agent(frontmatter, role)
         write_text_atomic(target, content)
 
 
-def install_one(
-    client: str,
+def install_skill(
     source: Path,
-    codex_metadata: Path,
     target: Path,
     *,
     force: bool,
     dry_run: bool,
 ) -> None:
-    print(f"{client:7} -> {target}")
     if dry_run:
         return
-
     if target.exists() or target.is_symlink():
         if not force:
             raise FileExistsError(
                 f"{target} already exists; rerun with --force to replace it."
             )
-        if not safe_to_replace(target):
+        if not safe_skill_target(target):
             raise RuntimeError(f"Refusing to replace unexpected target: {target}")
         if target.is_dir() and not target.is_symlink():
             shutil.rmtree(target)
@@ -208,36 +180,101 @@ def install_one(
         ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
     )
 
-    if client == "codex" and codex_metadata.exists():
-        metadata_target = target / "agents" / "openai.yaml"
-        metadata_target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(codex_metadata, metadata_target)
+
+def apply_skill_metadata(
+    spec: ClientSpec,
+    integrations_dir: Path,
+    target: Path,
+    *,
+    dry_run: bool,
+) -> None:
+    if not spec.skill_metadata:
+        return
+    source = integrations_dir / spec.skill_metadata["source"]
+    destination = target / spec.skill_metadata["target"]
+    print(f"{spec.client_id}-metadata -> {destination}")
+    if dry_run:
+        return
+    if not source.is_file():
+        raise FileNotFoundError(f"Client skill metadata not found: {source}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, destination)
+
+
+def backup_target(path: Path) -> Path:
+    stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    candidate = path.with_name(f"{path.name}.legacy-{stamp}")
+    sequence = 1
+    while candidate.exists():
+        candidate = path.with_name(f"{path.name}.legacy-{stamp}-{sequence}")
+        sequence += 1
+    return candidate
+
+
+def handle_legacy_installations(
+    specs: tuple[ClientSpec, ...],
+    scope: str,
+    project_dir: Path,
+    *,
+    migrate: bool,
+    dry_run: bool,
+) -> None:
+    seen: set[Path] = set()
+    for spec in specs:
+        for legacy in legacy_skill_targets(spec, scope, project_dir):
+            resolved = legacy.resolve()
+            if resolved in seen or not (legacy.exists() or legacy.is_symlink()):
+                continue
+            seen.add(resolved)
+            if not safe_skill_target(legacy):
+                raise RuntimeError(f"Refusing to migrate unexpected target: {legacy}")
+            if not migrate:
+                print(
+                    f"WARNING: {spec.client_id} legacy skill found at {legacy}; "
+                    "rerun with --migrate-legacy to move it to a timestamped backup."
+                )
+                continue
+            backup = backup_target(legacy)
+            print(f"{spec.client_id}-legacy -> {backup}")
+            if not dry_run:
+                shutil.move(str(legacy), str(backup))
+
+
+def install_python_dependencies(requirements: Path, *, dry_run: bool) -> None:
+    command = [sys.executable, "-m", "pip", "install", "-r", str(requirements)]
+    print("python-deps -> " + " ".join(command))
+    if not dry_run:
+        subprocess.run(command, check=True)
 
 
 def main() -> int:
-    args = parse_args()
     repo_dir = Path(__file__).resolve().parent
     source = repo_dir / "skill" / "make-ppt"
-    codex_metadata = repo_dir / "integrations" / "codex" / "openai.yaml"
     integrations_dir = repo_dir / "integrations"
+    registry = load_registry(integrations_dir / "clients.json")
+    args = parse_args(registry)
 
     if not (source / "SKILL.md").is_file():
         raise FileNotFoundError(f"Canonical skill not found: {source}")
 
-    clients = CLIENTS if args.client == "all" else (args.client,)
+    client_ids = tuple(registry) if args.client == "all" else (args.client,)
+    specs = tuple(registry[client_id] for client_id in client_ids)
     project_dir = args.project_dir.resolve()
 
-    jobs = []
-    for client in clients:
-        target = (
-            user_target(client)
-            if args.scope == "user"
-            else project_target(client, project_dir)
+    if args.install_python_deps:
+        install_python_dependencies(
+            source / "requirements.txt",
+            dry_run=args.dry_run,
         )
-        jobs.append((client, target))
+
+    jobs = [(spec, skill_target(spec, args.scope, project_dir)) for spec in specs]
+    unique_targets: list[Path] = []
+    for _, target in jobs:
+        if target not in unique_targets:
+            unique_targets.append(target)
 
     existing = [
-        target for _, target in jobs if target.exists() or target.is_symlink()
+        target for target in unique_targets if target.exists() or target.is_symlink()
     ]
     if existing and not args.force and not args.dry_run:
         formatted = "\n".join(f"  - {target}" for target in existing)
@@ -246,23 +283,30 @@ def main() -> int:
             f"{formatted}\nRerun with --force to replace them."
         )
 
-    for client, target in jobs:
-        install_one(
-            client,
-            source,
-            codex_metadata,
-            target,
-            force=args.force,
-            dry_run=args.dry_run,
-        )
+    for spec, target in jobs:
+        print(f"{spec.client_id:12} -> {target}")
+
+    for target in unique_targets:
+        install_skill(source, target, force=args.force, dry_run=args.dry_run)
+
+    for spec, target in jobs:
+        apply_skill_metadata(spec, integrations_dir, target, dry_run=args.dry_run)
         sync_agents(
-            client,
+            spec,
             source,
             integrations_dir,
-            agents_dir(client, args.scope, project_dir),
+            args.scope,
+            project_dir,
             dry_run=args.dry_run,
         )
 
+    handle_legacy_installations(
+        specs,
+        args.scope,
+        project_dir,
+        migrate=args.migrate_legacy,
+        dry_run=args.dry_run,
+    )
     return 0
 
 
