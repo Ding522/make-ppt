@@ -29,12 +29,27 @@ binding as the visual rules below.
      optional right-aligned muted mono cross-reference (`→ 解法詳見 P12`)
 - Do not reserve takeaway space when it is omitted. Let the working area extend to the
   normal bottom margin; an empty bottom band is not part of the page scaffold.
-- Cover / section / closing slides invert to near-black `#1A1714` background with a
-  white top hairline, mono header row (the deck's own **real context** — topic, team,
-  or date, e.g. `技術分享 / 2026-07` — plus a page or badge), and huge display
-  typography. The context line states what this deck actually is; **never invent event
-  branding** (no fabricated summit/conference names, no `20XX XXX SUMMIT / TAIWAN`
-  chrome). Pass it via `add_section_slide(..., context=…)`.
+- Covers use exactly one of two controlled variants. The outline records the choice;
+  the builder implements it with `add_cover_slide()` rather than composing a cover ad hoc.
+  - **`editorial-light`** — default for technical shares, adoption stories, case studies,
+    and implementation retrospectives. Warm off-white background, dark top hairline and
+    real-context row, optional orange mono eyebrow, oversized one- or two-line dark title,
+    short orange rule, optional subtitle, and quiet presenter/date footer. This matches
+    the primary reference cover.
+  - **`report-dark`** — default for monthly reports, progress reports, performance
+    reviews, governance/status reports, and management-facing delivery updates.
+    Near-black background, white top hairline and real-context row, orange mono eyebrow,
+    oversized white title, short orange rule, optional scope/subtitle, presenter/team,
+    and an optional bottom highlight.
+- Infer the variant from the presentation context; an explicit user choice overrides
+  inference. When the context is genuinely ambiguous, use `editorial-light`.
+- A cover's subtitle and bottom highlight are **optional content**, not decorative slots.
+  Omit them when unsupported or unnecessary. Never invent a fixed count, KPI summary,
+  or phrase such as `三件事` merely to fill the `report-dark` footer.
+- Section and closing slides may still invert to near-black `#1A1714`; section dividers
+  use `add_section_slide()`. The context line on every dark slide states the deck's own
+  real topic, team, and/or date. Never invent event branding (no fabricated summit or
+  conference names, no `20XX XXX SUMMIT / TAIWAN` chrome).
 
 ## 2. Palette (sampled values — use exactly these)
 
@@ -66,10 +81,11 @@ any slide's area; the rest is ink, muted gray, and whitespace.
   `theme.snap_pt()` enforces both at run time. **Titles stay on one line**: write them
   concise enough to fit one line at 28pt across the content width; `add_argument_title`
   auto-fits by stepping down the 2pt grid to `S_TITLE_MIN` (22pt) only when a title is
-  genuinely too long, rather than wrapping. Cover / section-divider **display hero**
-  titles are a separate register and keep their large sizes (`S_TITLE_BIG` 40pt,
-  `S_SECTION_NUM` 150pt) — the 28pt one-line rule applies to content slides, not to the
-  hero display type.
+  genuinely too long, rather than wrapping. Cover and section-divider **display hero**
+  titles are separate registers: `S_COVER_TITLE_LIGHT` 56pt,
+  `S_COVER_TITLE_DARK` 52pt, `S_TITLE_BIG` 40pt for section titles, and
+  `S_SECTION_NUM` 150pt. The 28pt one-line rule applies to content slides, not cover or
+  section display type.
 - CJK family: **Noto Sans TC** for all proportional text: titles, supporting sentences,
   body copy, labels, and tables. Verify that it and its bold weight are installed before
   building. Do not substitute Microsoft JhengHei or another CJK family silently.

@@ -471,6 +471,150 @@ def add_metric_callout(slide, x, y, segments, *, size=54, w=Inches(8), caption=N
     return tb
 
 # ---------------------------------------------------------------- full-slide scaffolds
+def add_cover_slide(slide, title_segments, *, variant="editorial-light", context=None,
+                    eyebrow=None, subtitle=None, presenter=None, affiliation=None,
+                    date=None, page_marker=None, footer_highlight=None):
+    """Build one of the two supported cover compositions.
+
+    ``editorial-light`` follows the primary reference cover: warm off-white canvas,
+    oversized two-line editorial title, short orange rule, optional subtitle, and a
+    quiet author/date footer. ``report-dark`` is the formal monthly/progress/
+    performance-report cover: near-black canvas, white title, orange metadata, and an
+    optional bottom scope/highlight line.
+
+    ``footer_highlight`` is truly optional. Never invent a fixed count or summary such
+    as "三件事" merely to fill the bottom of a dark cover.
+    """
+    if variant not in {"editorial-light", "report-dark"}:
+        raise ValueError(f"unknown cover variant: {variant}")
+
+    context = context or T.DECK_CONTEXT
+    is_dark = variant == "report-dark"
+    background = T.INK if is_dark else T.BG
+    primary = T.ON_DARK if is_dark else T.INK
+    secondary = T.DARK_PANEL_MUTED if is_dark else T.MUTED
+    chrome = T.ON_DARK if is_dark else T.INK
+
+    add_background(slide, background)
+    add_hairline(slide, Inches(0.5), color=chrome, weight=Pt(1.25))
+
+    cb, cf = textbox(slide, T.MARGIN_X, Inches(0.66), Inches(7.4), Inches(0.3))
+    rich_par(cf, [(context, {"color": chrome, "mono": True, "size": T.S_MONO})], first=True)
+
+    header_right = page_marker or (date if is_dark else None)
+    if header_right:
+        hb, hf = textbox(
+            slide,
+            T.SLIDE_W - T.MARGIN_X - Inches(2.5),
+            Inches(0.66),
+            Inches(2.5),
+            Inches(0.3),
+        )
+        rich_par(
+            hf,
+            [(header_right, {"color": secondary, "mono": True, "size": T.S_MONO})],
+            align=PP_ALIGN.RIGHT,
+            first=True,
+        )
+
+    if is_dark:
+        if eyebrow:
+            eb, ef = textbox(slide, T.MARGIN_X, Inches(1.55), Inches(8.4), Inches(0.34))
+            rich_par(
+                ef,
+                [(eyebrow, {"color": T.ORANGE, "mono": True, "bold": True, "size": T.S_EYEBROW})],
+                first=True,
+            )
+
+        title_y = Inches(2.12) if eyebrow else Inches(1.9)
+        title_opts = [
+            (text, dict({"color": primary, "bold": True, "size": T.S_COVER_TITLE_DARK}, **(opts or {})))
+            for text, opts in title_segments
+        ]
+        tb, tf = textbox(slide, T.MARGIN_X, title_y, Inches(11.2), Inches(1.6), wrap=True)
+        rich_par(tf, title_opts, size=T.S_COVER_TITLE_DARK, first=True, line=1.02)
+
+        accent_y = Inches(3.82)
+        add_hairline(slide, accent_y, w=Inches(1.55), color=T.ORANGE, weight=Pt(3.0))
+        if subtitle:
+            sb, sf = textbox(slide, T.MARGIN_X, Inches(4.05), Inches(10.7), Inches(0.6))
+            rich_par(
+                sf,
+                [(subtitle, {"color": secondary, "size": T.S_COVER_SUBTITLE})],
+                first=True,
+                line=1.2,
+            )
+
+        if presenter or affiliation:
+            ab, af = textbox(slide, T.MARGIN_X, Inches(4.8), Inches(10.8), Inches(0.42))
+            author_segments = []
+            if presenter:
+                author_segments.append((presenter, {"color": primary, "bold": True, "size": T.S_SUPPORT}))
+            if presenter and affiliation:
+                author_segments.append(("   |   ", {"color": secondary, "size": T.S_SUPPORT}))
+            if affiliation:
+                author_segments.append((affiliation, {"color": secondary, "size": T.S_SUPPORT}))
+            rich_par(af, author_segments, first=True)
+
+        add_hairline(slide, Inches(5.35), color=T.DARK_PANEL_MUTED)
+        if footer_highlight:
+            fb, ff = textbox(slide, T.MARGIN_X, T.SLIDE_H - Inches(0.88), Inches(11.5), Inches(0.38))
+            rich_par(
+                ff,
+                [(footer_highlight, {"color": T.ORANGE, "mono": True, "bold": True, "size": T.S_SUPPORT})],
+                first=True,
+            )
+    else:
+        if eyebrow:
+            eb, ef = textbox(slide, T.MARGIN_X, Inches(1.98), Inches(8.4), Inches(0.34))
+            rich_par(
+                ef,
+                [(eyebrow, {"color": T.ORANGE, "mono": True, "size": T.S_EYEBROW})],
+                first=True,
+            )
+
+        title_y = Inches(2.58) if eyebrow else Inches(2.32)
+        title_opts = [
+            (text, dict({"color": primary, "bold": True, "size": T.S_COVER_TITLE_LIGHT}, **(opts or {})))
+            for text, opts in title_segments
+        ]
+        tb, tf = textbox(slide, T.MARGIN_X, title_y, Inches(9.4), Inches(2.0), wrap=True)
+        rich_par(tf, title_opts, size=T.S_COVER_TITLE_LIGHT, first=True, line=0.94)
+
+        add_hairline(slide, Inches(4.92), w=Inches(1.55), color=T.ORANGE, weight=Pt(3.0))
+        if subtitle:
+            sb, sf = textbox(slide, T.MARGIN_X, Inches(5.28), Inches(9.4), Inches(0.92))
+            rich_par(
+                sf,
+                [(subtitle, {"color": secondary, "size": T.S_COVER_SUBTITLE})],
+                first=True,
+                line=1.25,
+            )
+
+        add_hairline(slide, Inches(6.63), color=T.HAIRLINE)
+        if presenter:
+            pb, pf = textbox(slide, T.MARGIN_X, Inches(6.83), Inches(6.0), Inches(0.3))
+            rich_par(
+                pf,
+                [(presenter, {"color": primary, "mono": True, "size": T.S_MONO})],
+                first=True,
+            )
+        if date:
+            db, df = textbox(
+                slide,
+                T.SLIDE_W - T.MARGIN_X - Inches(2.5),
+                Inches(6.83),
+                Inches(2.5),
+                Inches(0.3),
+            )
+            rich_par(
+                df,
+                [(date, {"color": secondary, "mono": True, "size": T.S_MONO})],
+                align=PP_ALIGN.RIGHT,
+                first=True,
+            )
+
+
 def add_section_slide(slide, number, part_label, title_segments, bullets, nav, active_idx,
                       *, corner_badge=None, context=None):
     """Dark section divider: giant orange number, PART label, white title with orange

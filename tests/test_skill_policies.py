@@ -178,6 +178,28 @@ class SkillPolicyTests(unittest.TestCase):
         self.assertIn("scripts/lint_zh_tw.py", skill)
         self.assertIn("checker never rewrites content", guide)
 
+    def test_cover_variants_are_explicit_and_footer_copy_is_optional(self) -> None:
+        style = (SKILL_DIR / "references" / "style-guide.md").read_text(
+            encoding="utf-8"
+        )
+        outline = (SKILL_DIR / "templates" / "outline-template.md").read_text(
+            encoding="utf-8"
+        )
+        planner = (SKILL_DIR / "references" / "ppt-planner-role.md").read_text(
+            encoding="utf-8"
+        )
+        builder = (SKILL_DIR / "references" / "ppt-builder-role.md").read_text(
+            encoding="utf-8"
+        )
+
+        for variant in ("editorial-light", "report-dark"):
+            self.assertIn(variant, style)
+            self.assertIn(variant, outline)
+        self.assertIn("monthly", planner.lower())
+        self.assertIn("performance", planner.lower())
+        self.assertIn("add_cover_slide", builder)
+        self.assertIn("Footer Highlight", outline)
+
 
 if __name__ == "__main__":
     unittest.main()

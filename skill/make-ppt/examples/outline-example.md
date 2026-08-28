@@ -1,8 +1,9 @@
 # outline-example.md — realistic example (excerpt of a 10-slide deck)
 
-This example shows the required fidelity. The global section is complete; two
-per-slide specifications are shown at full fidelity (a tension/root-cause slide and a
-mechanism slide). Real outlines specify every slide at this level.
+This example shows the required fidelity. The global section is complete; three
+per-slide specifications are shown at full fidelity (the opening cover, a
+tension/root-cause slide, and a mechanism slide). Real outlines specify every slide at
+this level.
 
 ---
 
@@ -49,6 +50,15 @@ Demand for MCP grew → integration stalled → root cause: plaintext tokens on 
 technical · factual · concise · evidence-oriented · direct · implementation-grounded
 · register: sharing with 同仁 — plain declarative, never a hosted session
 
+## Deck Context Line
+
+內部技術分享 / MCP 認證治理
+
+## Cover Variant
+
+`editorial-light` — technical implementation share; subtitle and presenter/date footer
+are useful, but Footer Highlight is omitted.
+
 ## Design System
 
 （同 outline-template.md 預設；CJK font: Noto Sans TC（已驗證）；Mono: Consolas（已驗證））
@@ -69,6 +79,73 @@ technical · factual · concise · evidence-oriented · direct · implementation
 08 — Governance — audience-bound token 限縮爆炸半徑
 09 — Evidence — 試點團隊接入後的實際流程截圖
 10 — Summary — 可複用的三條實作原則
+
+---
+
+## Slide 01 — MCP 認證是規模化的門檻
+
+### Slide Role
+Opening
+
+### Purpose
+Establish the deck as an internal implementation share about the authentication control
+required before MCP can scale across teams.
+
+### Argument
+MCP 能不能擴大採用，關鍵不只在工具能力，而在認證能否安全地集中治理。
+
+### Key Message
+把 Token 留在各 Client 端，MCP 就無法安全地規模化。
+
+### Title
+MCP 認證是\n規模化的門檻
+
+### Title Emphasis
+None — the short orange rule carries cover emphasis.
+
+### Eyebrow
+`MCP AUTH · ADOPTION`
+
+### Cover Variant
+`editorial-light`
+
+### Supporting Sentence
+統一認證閘道、Device Flow 與 audience-bound token 的落地實作
+
+### Visual Form
+Editorial light cover
+
+### Layout
+暖白底；頂部真實 context 與頁碼；左側超大兩行標題；標題下短橘線；兩行內副標；
+底部細線、講者與日期。無 Footer Highlight。
+
+### Content
+- Context: `內部技術分享 / MCP 認證治理`
+- Page Marker: `01 / 10`
+- Eyebrow: `MCP AUTH · ADOPTION`
+- Presenter: `平台工程團隊`
+- Date: `2026.07`
+
+### Visual Hierarchy
+1 兩行主標 → 2 短橘線 → 3 副標 → 4 context / 講者 / 日期
+
+### Visual Elements
+`add_cover_slide(variant="editorial-light")` ・ top hairline ・ mono context ・
+oversized two-line title ・ short orange rule ・ muted subtitle ・ quiet footer
+
+### Source Assets
+None
+
+### Source Facts
+- Source file: mcp-auth-design.md
+- Section: document title / executive summary
+- Supporting text: 「統一認證是 MCP 規模化導入的必要控制層」
+
+### Style Constraints
+不可改成深色 section divider；不可加入活動品牌、圖片或 Footer Highlight filler。
+
+### Editing Constraints
+保留 `editorial-light` 構圖與兩行標題；講者、日期可局部更新。
 
 ---
 

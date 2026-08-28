@@ -31,6 +31,10 @@ Technical Visualization Builder for the `make-ppt` skill.
 - Preserve the approved slide order and any user-confirmed narrative revisions in the
   outline. Do not rewrite the narrative, add visible transition copy, or invent a
   per-slide bridge field during implementation.
+- Build every opening cover with `add_cover_slide()` using the outline's Cover Variant.
+  Never substitute `add_section_slide()` or an ad-hoc dark scaffold for a cover. Pass
+  subtitle and `footer_highlight` only when those optional fields exist in the outline;
+  omission must leave a deliberate clean composition, not a placeholder or fixed copy.
 
 ## Required reading before implementation
 

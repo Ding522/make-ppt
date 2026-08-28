@@ -45,7 +45,10 @@ STEP_PT     = 2      # size ladder increments by 2pt
 
 S_TITLE     = 28     # content-slide argument title — target size; kept to one line (see TITLE_MIN)
 S_TITLE_MIN = 22     # title auto-fit floor: shrink on the 2pt grid only as far as this to avoid wrapping
-S_TITLE_BIG = 40     # cover / section-divider display hero (a different register, not a page title)
+S_COVER_TITLE_LIGHT = 56  # editorial-light cover hero; may wrap to two deliberate lines
+S_COVER_TITLE_DARK = 52   # report-dark cover hero; one or two deliberate lines
+S_COVER_SUBTITLE = 18     # cover subtitle / report scope
+S_TITLE_BIG = 40     # section-divider display hero (a different register, not a page title)
 S_SECTION_NUM = 150  # giant section number (display numeral)
 
 S_TAKEAWAY  = 20     # bottom takeaway conclusion

@@ -19,6 +19,7 @@ VALIDATOR = (
 
 sys.path.insert(0, str(TEMPLATE_DIR))
 P = importlib.import_module("primitives")
+T = importlib.import_module("theme")
 
 
 def new_slide():
@@ -105,6 +106,87 @@ class NativeTablePrimitiveTests(unittest.TestCase):
             self.assertNotEqual(0, fake.returncode)
             self.assertIn("missing a native table object", fake.stderr)
             self.assertEqual(0, real.returncode, real.stderr)
+
+
+class CoverPrimitiveTests(unittest.TestCase):
+    @staticmethod
+    def _shape_texts(slide) -> list[str]:
+        return [
+            shape.text
+            for shape in slide.shapes
+            if getattr(shape, "has_text_frame", False) and shape.text
+        ]
+
+    def test_editorial_light_cover_matches_reference_hierarchy(self) -> None:
+        _, slide = new_slide()
+
+        P.add_cover_slide(
+            slide,
+            [("從觀望\n到全公司落地", {})],
+            variant="editorial-light",
+            context="AI AGENTIC CODING · ADOPTION",
+            eyebrow="導入實戰",
+            subtitle="兩年 AI Agentic Coding 導入實戰\n流程整合與安全治理",
+            presenter="appLeboy",
+            date="2026.07.01",
+            page_marker="01 / 24",
+        )
+
+        self.assertEqual(T.BG, slide.background.fill.fore_color.rgb)
+        texts = self._shape_texts(slide)
+        self.assertIn("從觀望\n到全公司落地", texts)
+        self.assertIn("兩年 AI Agentic Coding 導入實戰\n流程整合與安全治理", texts)
+        self.assertIn("appLeboy", texts)
+        self.assertIn("2026.07.01", texts)
+        title = next(
+            shape
+            for shape in slide.shapes
+            if getattr(shape, "has_text_frame", False)
+            and shape.text == "從觀望\n到全公司落地"
+        )
+        self.assertEqual(T.S_COVER_TITLE_LIGHT, title.text_frame.paragraphs[0].runs[0].font.size.pt)
+
+    def test_report_dark_cover_has_no_fixed_footer_summary(self) -> None:
+        _, slide = new_slide()
+
+        P.add_cover_slide(
+            slide,
+            [("年度績效成果報告", {})],
+            variant="report-dark",
+            context="雲端處 ITSM 開發團隊",
+            eyebrow="2026 · PERFORMANCE REVIEW",
+            presenter="李相定",
+            affiliation="架構師助手 / ITSM 開發",
+            date="2026 · 07",
+        )
+
+        self.assertEqual(T.INK, slide.background.fill.fore_color.rgb)
+        all_text = "\n".join(self._shape_texts(slide))
+        self.assertIn("年度績效成果報告", all_text)
+        self.assertNotIn("三件事", all_text)
+
+    def test_report_dark_footer_highlight_is_truly_optional(self) -> None:
+        _, without_footer = new_slide()
+        P.add_cover_slide(
+            without_footer,
+            [("七月工作進度簡報", {})],
+            variant="report-dark",
+        )
+        self.assertNotIn("回扣 KPI", "\n".join(self._shape_texts(without_footer)))
+
+        _, with_footer = new_slide()
+        P.add_cover_slide(
+            with_footer,
+            [("七月工作進度簡報", {})],
+            variant="report-dark",
+            footer_highlight="回扣 KPI 與跨月交付風險",
+        )
+        self.assertIn("回扣 KPI 與跨月交付風險", "\n".join(self._shape_texts(with_footer)))
+
+    def test_unknown_cover_variant_is_rejected(self) -> None:
+        _, slide = new_slide()
+        with self.assertRaisesRegex(ValueError, "cover variant"):
+            P.add_cover_slide(slide, [("封面", {})], variant="unknown")
 
 
 if __name__ == "__main__":

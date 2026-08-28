@@ -49,7 +49,7 @@ runs; `[("…", {}), ("decisive", {"color": T.ORANGE}), …]`), `add_supporting_
 `add_native_table(headers, rows, col_widths=, alignments=, row_label_col=, merges=)`,
 `add_status_pill`, `add_step_marker`, `add_arrow(dashed=, arrow=)`, `add_technical_node`,
 `add_terminal_panel(title, lines, badge=)`, `add_metric_callout`,
-`add_section_slide`, `add_chip` (auto-width component label, never wraps),
+`add_cover_slide(variant=)`, `add_section_slide`, `add_chip` (auto-width component label, never wraps),
 `add_label_panel` (bordered panel with a centered label inside),
 `add_photo_slot` (reserved photo region, placeholder by default),
 `add_screenshot` (aspect-ratio-preserving fit; degrades to a placeholder if the file
@@ -58,6 +58,9 @@ Extend this file for additional grammar (sequence actors/messages, comparison la
 Kanban columns, gateway blocks) rather than one-off code in slides.
 
 **Use the right primitive — do not hand-roll these recurring structures:**
+- An **opening cover** → `add_cover_slide` with the outline's `editorial-light` or
+  `report-dark` variant. Never reuse `add_section_slide` for Slide 01. Pass optional
+  subtitle/footer content only when the outline contains it.
 - A **semantic table** (headers + repeated rows + aligned columns) →
   `add_native_table`. A grid of text boxes and lines is not an editable table and
   fails object-model QA.
@@ -94,8 +97,9 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
    long, instead of wrapping; do not hand-shrink titles. Keep the title box full content
    width and leave ~10% slack. All other text uses the named ladder tokens; nothing goes
    below 12pt and every size is on the 2pt grid (`theme.snap_pt()` enforces this, so don't
-   hand-tune to odd sizes). Cover/section hero display type (`S_TITLE_BIG`,
-   `S_SECTION_NUM`) is exempt from the 28pt one-line rule.
+   hand-tune to odd sizes). Cover/section hero display type (`S_COVER_TITLE_LIGHT`,
+   `S_COVER_TITLE_DARK`, `S_TITLE_BIG`, `S_SECTION_NUM`) is exempt from the 28pt
+   one-line rule.
 7. **Integer coordinates only** (already enforced inside the primitives). Centering math
    like `node_h / 2` produces a Python float; python-pptx then writes a non-integer EMU
    (`y="3360420.0"`, `cx="0.0"`) that LibreOffice cannot parse, so the shape/connector

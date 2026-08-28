@@ -13,6 +13,10 @@ small style sample — so the user can confirm direction before the full deck is
 When the narrative direction is unclear or the user asks to explore, it first pauses
 at a compact **Narrative Fork checkpoint** so multiple axes are compared before a full
 outline is written.
+The grammar includes two controlled cover variants within that same style:
+`editorial-light` for technical/editorial narratives and `report-dark` for monthly,
+progress, performance, and status reporting. Cover copy slots remain optional and
+source-grounded.
 
 ## Portable execution contract
 
@@ -243,6 +247,10 @@ deck's dominant visual grammar). The builder reads `references/pptx-generation-r
 build.py) into `presentation/src/`, implements just those sample slides as maintainable
 Python (python-pptx), generates a partial `presentation.pptx`, renders their previews, and
 fixes rendering defects. It does NOT build the remaining slides yet.
+
+The sample cover must use the approved/inferred Cover Variant from `outline.md` through
+`add_cover_slide()`. A missing optional subtitle or Footer Highlight stays omitted; the
+builder never fills those zones with generic summary copy.
 
 The builder treats `outline.md` as the implementation contract. It reads only the outline,
 the listed assets, and the required skill references; it does not re-read the full evidence

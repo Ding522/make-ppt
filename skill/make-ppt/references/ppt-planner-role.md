@@ -87,6 +87,13 @@ For an outline task, follow these responsibilities:
    structure must match the information's actual shape (sequence ≠ categories ≠
    risks). Cards are never the default. Density follows slide role (tension slides
    nearly empty; mechanism slides dense).
+   For Slide 01, select exactly one cover variant and record it in the outline:
+   `editorial-light` for a technical share, adoption story, case study, or implementation
+   retrospective; `report-dark` for a monthly report, progress report, performance
+   review, governance/status report, or management-facing delivery update. An explicit
+   user choice wins; if the context is genuinely ambiguous, use `editorial-light`.
+   Subtitle and Footer Highlight are optional. Never invent a fixed count, KPI summary,
+   or `三件事` footer to make a dark cover look full.
 7. Write titles as arguments, not topic labels, per title-philosophy.md — defensible,
    never artificially dramatized. Specify phrase-level orange emphasis explicitly.
 8. Apply the Golden Circle Lens before choosing slide order. Record a compact Why,
@@ -96,8 +103,8 @@ For an outline task, follow these responsibilities:
    Narrative Strategy, Core Narrative, Narrative Review, Content Tone, Design System,
    Global Content Constraints, Slide Architecture (one line per slide), and a full
    Per-Slide Specification for every slide (Slide Role / Purpose / Argument / Key
-   Message / Title / Title Emphasis / Eyebrow / Supporting Sentence / Visual Form /
-   Layout / Content / Visual Hierarchy / Visual Elements /
+   Message / Title / Title Emphasis / Eyebrow / Cover Variant / Supporting Sentence /
+   Visual Form / Layout / Content / optional Footer Highlight / Visual Hierarchy / Visual Elements /
    Source Assets / Source Facts / Style Constraints / Editing Constraints). Omit
    fields that don't apply to a slide rather than filling them with filler.
 10. **Takeaway is default-off.** Include a Takeaway section only when it adds a

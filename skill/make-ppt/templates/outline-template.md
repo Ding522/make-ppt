@@ -76,6 +76,14 @@ phrases, mechanical three-part prose, and unsupported human stories or emotions.
 `技術分享 / 2026-07`. Must be true; never invented event or summit branding. The
 builder sets this as `DECK_CONTEXT` in theme.py.>
 
+## Cover Variant
+
+<Exactly one of `editorial-light` / `report-dark`. Infer from presentation context:
+technical share, adoption story, case study, or implementation retrospective →
+`editorial-light`; monthly, progress, performance, governance/status, or management
+delivery report → `report-dark`. Explicit user choice wins; ambiguous →
+`editorial-light`.>
+
 ## Design System
 
 - Canvas: 16:9 (13.333" × 7.5")
@@ -99,6 +107,8 @@ builder sets this as `DECK_CONTEXT` in theme.py.>
   working area extends to the bottom margin unless a qualified takeaway is present
 - Native Table Style: one editable PowerPoint table object; dark header, warm-white
   body, 1pt hairlines, 16pt header / 14pt body, no shadow
+- Cover Style: `editorial-light` or `report-dark` from Cover Variant; always composed
+  with `add_cover_slide()`; subtitle and Footer Highlight are optional
 
 ## Global Content Constraints
 
@@ -147,6 +157,9 @@ Mechanism / Workflow / Evidence / Comparison / Summary / Section / Closing>
 ### Eyebrow
 `// NN    <label>`
 
+### Cover Variant
+<Slide 01 / Opening only: `editorial-light` or `report-dark`. Omit on non-cover slides.>
+
 ### Supporting Sentence
 <final visible text; mark bolded phrases with **bold**>
 
@@ -174,6 +187,11 @@ a semantic table only as prose.>
 <Optional and default-off. Omit this entire section unless the evidence supports a
 concrete implication that is not already stated by the title or working area and that
 changes interpretation or action. When omitted, reserve no takeaway space.>
+
+### Footer Highlight
+<Cover only, optional. Include only when the source/request supplies a useful scope,
+period, or report emphasis. Omit entirely when unnecessary. Never invent a fixed count,
+KPI list, or `三件事` filler.>
 
 ### Visual Hierarchy
 <numbered reading order, most dominant first>
