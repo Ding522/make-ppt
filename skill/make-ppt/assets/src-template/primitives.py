@@ -153,11 +153,16 @@ def add_takeaway_line(slide, segments, *, note=None, y=None):
 def _set_cell_border(cell, *, color=T.HAIRLINE, width=T.TABLE_BORDER_W):
     """Apply a flat hairline border to every edge of one native table cell."""
     tc_pr = cell._tc.get_or_add_tcPr()
-    for edge_name in ("a:lnL", "a:lnR", "a:lnT", "a:lnB"):
+    for index, edge_name in enumerate(("a:lnL", "a:lnR", "a:lnT", "a:lnB")):
         edge = tc_pr.find(qn(edge_name))
         if edge is None:
             edge = OxmlElement(edge_name)
-            tc_pr.append(edge)
+            # CT_TableCellProperties puts line elements BEFORE cell fill.
+            # PowerPoint ignores trailing line elements and falls back to the
+            # table theme's white borders if this schema order is violated.
+        else:
+            tc_pr.remove(edge)
+        tc_pr.insert(index, edge)
         edge.set("w", str(int(width)))
         for child in list(edge):
             edge.remove(child)

@@ -28,6 +28,7 @@ presentation/src/
 ├── build.py          # entry point; deterministic; `run_python.sh build.py` regenerates the deck
 ├── theme.py          # ALL design tokens (colors, fonts, sizes, margins, rule weights)
 ├── primitives.py     # reusable grammar primitives (below)
+├── relationship_layouts.py # optional timelines, status matrices, layered lists
 └── slides/slideNN.py # one module per slide for decks > ~8 slides; smaller decks inline in build.py
 ```
 
@@ -62,7 +63,8 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
   `report-dark` variant. Never reuse `add_section_slide` for Slide 01. Pass optional
   subtitle/footer content only when the outline contains it.
 - A **semantic table** (headers + repeated rows + aligned columns) →
-  `add_native_table`. A grid of text boxes and lines is not an editable table and
+  `add_native_table` (or `relationship_layouts.add_status_matrix` for the outlined
+  status-matrix variant; it creates one native table). A grid of text boxes and lines is not an editable table and
   fails object-model QA.
 - A **component/tech-name chip** (ADK, Sandbox, Gateway, Model Armor) → `add_chip`.
   Hand-rolling a rounded rectangle with the default `word_wrap=True` and a tight width

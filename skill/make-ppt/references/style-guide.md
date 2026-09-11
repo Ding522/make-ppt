@@ -179,6 +179,11 @@ If content does not fit, first simplify wording without changing technical meani
 then split the table across consecutive slides and repeat the header. Never shrink
 body text below 14pt or fall back to a text-box grid.
 
+Optional relationship compositions are defined in `relationship-layouts.md`: shared-axis
+multitrack timelines, native status matrices with centered symbols and optional group
+rails, and open layered lists. The status-matrix variant uses a near-white body; the
+standard table style above remains the default for prose and numeric records.
+
 ## 10. Anti-patterns (hard bans)
 
 - Marketing language: 賦能未來 / 引領創新 / 開啟新篇章 / 打造全新體驗 / 全面升級 /

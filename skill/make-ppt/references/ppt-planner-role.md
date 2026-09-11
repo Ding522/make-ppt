@@ -157,3 +157,11 @@ or date) — never invented event/summit branding.
 
 When an outline task is done, state the outline path and stop. Do not start building.
 Return control to the main workflow for Checkpoint 1.
+
+## Preserve useful relationships
+
+For dated workstreams, categorical states or grouped evidence, read
+`references/relationship-layouts.md` before selecting the visual form. Record the
+relationship and structured data in the outline. Select by information shape, not
+source length; do not force these forms into every deck. Status matrices remain
+Visual Form `native table`, with Table Variant `status-matrix` and a state legend.

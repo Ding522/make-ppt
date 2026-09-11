@@ -344,6 +344,7 @@ Never overwrite original source materials.
 | Resolve mode, narrative exploration, or edit impact | `references/cost-control-workflow.md` |
 | Every new presentation (planner) | `references/style-guide.md`, `references/title-philosophy.md`, `references/taiwan-language-guide.md`, `references/information-visualization.md` |
 | Every new presentation (source grounding) | `presentation/evidence/manifest.md` and every `presentation/evidence/sources/*.md` |
+| Dated workstreams, categorical states, or grouped evidence | `references/relationship-layouts.md` |
 | Before PPTX implementation (builder) | `references/pptx-generation-rules.md`, `references/style-guide.md`, `references/taiwan-language-guide.md` |
 | Before modifying an existing deck (builder) | `references/localized-edit-principle.md` |
 | Writing the outline (planner) | `templates/outline-template.md`, `examples/outline-example.md` |

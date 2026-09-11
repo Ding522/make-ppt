@@ -175,6 +175,9 @@ Mechanism / Workflow / Evidence / Comparison / Summary / Section / Closing>
 ### Table Schema
 <Include this entire section only when Visual Form is `native table`. Never describe
 a semantic table only as prose.>
+- Table Variant: <standard / status-matrix; select by content, not decoration>
+- State Legend: <status-matrix only: explicit key → symbol, meaning, color; distinguish unknown from absence>
+- Row Groups: <optional status-matrix body-row ranges, category labels and semantic colors>
 - Headers: <ordered column names>
 - Rows: <one ordered cell list per record; exact visible wording>
 - Column Width Ratios: <one positive ratio per column, e.g. 20 / 80>

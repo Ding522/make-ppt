@@ -145,3 +145,10 @@ full deck instead. Never hand-patch the `.pptx`.
 
 Finish with: output paths, what was generated/changed, defects found and fixed, and
 any implementation assumption (e.g. font substitution) worth the user's attention.
+
+## Optional relationship compositions
+
+When the outline selects a multitrack timeline, status-matrix native table, or layered
+list, read `references/relationship-layouts.md` and copy/use the starter module
+`relationship_layouts.py`. Preserve the outlined dates, state meanings and groups.
+A status matrix still requires the native-table structural check.

@@ -8,7 +8,10 @@ never "How can I turn these bullets into cards?"
 
 1. Identify what the information actually IS: parallel categories? sequential stages?
    a causal chain? a contrast? a protocol interaction? a trend? evidence?
-2. Pick the matching form from the catalog.
+2. Pick the matching form from the catalog. For dated workstreams, cross-category
+   states or grouped evidence, read `relationship-layouts.md` and consider its
+   multitrack timeline, status-matrix table or layered list. Simple content is not
+   a reason to skip a useful relationship layout.
 3. Decide what dominates the slide (title? diagram? screenshot? one number?).
 4. Set density by slide role (see style-guide §6).
 
