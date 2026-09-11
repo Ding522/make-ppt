@@ -1,4 +1,0 @@
-interface:
-  display_name: "Make PPT"
-  short_description: "Build editable technical slide decks"
-  default_prompt: "Use $make-ppt to create an editable technical slide deck from the materials in this folder."
