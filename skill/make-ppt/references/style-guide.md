@@ -66,6 +66,14 @@ binding as the visual rules below.
 | BLUE | `#3972DA` | information / technical category / tool semantics |
 | DARK_PANEL | `#1F1B17` | terminal & root-cause panels |
 
+The same palette is written into the PowerPoint theme (`T.THEME_COLORS`, applied by
+`apply_deck_theme`) so manual edits can pick deck colors from the theme color picker:
+Dark 1 = INK, Light 1 = BG, Dark 2 = INK_SOFT, Light 2 = HAIRLINE, Accent 1 = ORANGE,
+Accent 2–3 = theme-only sand `#E8DCCB` / brown `#8C6E54`, Accent 4–6 = RED / GREEN /
+BLUE, Hyperlink = BLUE, Followed = MUTED. Sand and brown keep the picker beige/brown-led
+for manual edits; they are not slide palette tokens.
+Theme fonts are `Noto Sans TC`. Generated objects still use explicit RGB values.
+
 **Color is semantics, never decoration.** Never alternate colors for variety. Never
 color a whole slide orange — orange is an emphasis device: the decisive phrase in a
 title, an important number, the active flow, a key arrow, a mechanism name, an

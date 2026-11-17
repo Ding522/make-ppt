@@ -44,7 +44,7 @@ full `presentation/evidence/` pack unless the user asks for source re-verificati
 
 ## Primitive inventory (assets/src-template/primitives.py — already validated)
 
-`add_background`, `add_eyebrow(number,label)`, `add_argument_title(segments)` (mixed
+`apply_deck_theme(prs)`, `add_background`, `add_eyebrow(number,label)`, `add_argument_title(segments)` (mixed
 runs; `[("…", {}), ("decisive", {"color": T.ORANGE}), …]`), `add_supporting_sentence`,
 `add_hairline`, `add_takeaway_line(segments, note=)`, `add_panel`,
 `add_native_table(headers, rows, col_widths=, alignments=, row_label_col=, merges=)`,
@@ -77,8 +77,10 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
 
 ## Hard technical rules
 
-1. **Blank layout only**: `prs.slide_layouts[6]`; set slide size 13.333"×7.5" before
-   adding slides.
+1. **Blank layout only**: `prs.slide_layouts[6]`; set slide size 13.333"×7.5" and call
+   `apply_deck_theme(prs)` (done by `build.py`'s `new_presentation()`) before adding
+   slides, so the PowerPoint theme colors, theme fonts, and master background match the
+   palette for manual editing.
 2. **Fonts**: use `Noto Sans TC` for all proportional text and `Consolas` for mono
    text. Before building, verify both fonts are installed; report a missing font rather
    than silently substituting another family. Set BOTH Latin and East Asian typefaces

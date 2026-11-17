@@ -34,6 +34,30 @@ DARK_PANEL_MUTED = RGBColor(0x8F, 0x87, 0x7C)
 
 ON_DARK   = RGBColor(0xF5, 0xF2, 0xEC)  # primary text on dark backgrounds
 
+# ---------------------------------------------------------------- PowerPoint theme
+# Written into ppt/theme/theme1.xml by primitives.apply_deck_theme() so manual edits in
+# PowerPoint see the deck palette in the theme color picker, and new shapes, text, and
+# slides default to it. Slide code still applies explicit RGB values from the palette
+# above; these slots never replace those tokens. SAND/BROWN exist only so the theme
+# picker is beige/brown-led for manual edits — slide code does not use them.
+THEME_NAME = "make-ppt"
+THEME_SAND  = RGBColor(0xE8, 0xDC, 0xCB)
+THEME_BROWN = RGBColor(0x8C, 0x6E, 0x54)
+THEME_COLORS = {
+    "dk1": INK,
+    "lt1": BG,
+    "dk2": INK_SOFT,
+    "lt2": HAIRLINE,
+    "accent1": ORANGE,
+    "accent2": THEME_SAND,
+    "accent3": THEME_BROWN,
+    "accent4": RED,
+    "accent5": GREEN,
+    "accent6": BLUE,
+    "hlink": BLUE,
+    "folHlink": MUTED,
+}
+
 # ---------------------------------------------------------------- type scale (pt)
 # Fixed 2pt-stepped ladder. Two hard rules hold across every deck:
 #   1. Nothing renders below MIN_PT (12pt).

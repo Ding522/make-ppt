@@ -189,5 +189,38 @@ class CoverPrimitiveTests(unittest.TestCase):
             P.add_cover_slide(slide, [("封面", {})], variant="unknown")
 
 
+class DeckThemeTests(unittest.TestCase):
+    def test_apply_deck_theme_writes_palette_and_fonts_into_saved_theme(self) -> None:
+        from lxml import etree
+        from pptx.opc.constants import RELATIONSHIP_TYPE as RT
+        from pptx.oxml.ns import qn
+
+        build = importlib.import_module("build")
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "themed.pptx"
+            build.new_presentation().save(path)
+            reopened = Presentation(path)
+
+        master = reopened.slide_master
+        theme = etree.fromstring(master.part.part_related_by(RT.THEME).blob)
+        colors = theme.find(qn("a:themeElements")).find(qn("a:clrScheme"))
+        for slot, rgb in T.THEME_COLORS.items():
+            self.assertEqual(
+                str(rgb),
+                colors.find(qn(f"a:{slot}")).find(qn("a:srgbClr")).get("val"),
+                slot,
+            )
+
+        fonts = theme.find(qn("a:themeElements")).find(qn("a:fontScheme"))
+        for kind in ("a:majorFont", "a:minorFont"):
+            font = fonts.find(qn(kind))
+            self.assertEqual(T.FONT_CJK, font.find(qn("a:latin")).get("typeface"))
+            self.assertEqual(T.FONT_CJK, font.find(qn("a:ea")).get("typeface"))
+
+        # New slides inherit the master background, which must resolve to BG via lt1.
+        bg_ref = master._element.cSld.find(qn("p:bg")).find(qn("p:bgRef"))
+        self.assertEqual("bg1", bg_ref.find(qn("a:schemeClr")).get("val"))
+
+
 if __name__ == "__main__":
     unittest.main()

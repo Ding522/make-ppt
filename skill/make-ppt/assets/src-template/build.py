@@ -8,11 +8,13 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
 from pptx import Presentation
 import theme as T
+import primitives as P
 
 def new_presentation():
     prs = Presentation()
     prs.slide_width = T.SLIDE_W
     prs.slide_height = T.SLIDE_H
+    P.apply_deck_theme(prs)
     return prs
 
 def blank_slide(prs):

@@ -34,6 +34,43 @@ def no_shadow(shape):
         pass
     return shape
 
+# ---------------------------------------------------------------- deck theme
+def apply_deck_theme(prs):
+    """Replace the default Office theme colors and fonts with the deck palette.
+
+    Rendering does not depend on this (primitives set explicit RGB and typefaces), but
+    without it PowerPoint's theme color picker shows Office blue/orange, new objects use
+    Calibri, and the master background is white. The master background references the
+    `bg1` slot, so mapping `lt1` to BG makes new slides warm off-white too."""
+    from lxml import etree
+    from pptx.opc.constants import RELATIONSHIP_TYPE as RT
+
+    part = prs.slide_master.part.part_related_by(RT.THEME)
+    root = etree.fromstring(part.blob)
+    root.set("name", T.THEME_NAME)
+    elements = root.find(qn("a:themeElements"))
+
+    colors = elements.find(qn("a:clrScheme"))
+    colors.set("name", T.THEME_NAME)
+    for slot, rgb in T.THEME_COLORS.items():
+        el = colors.find(qn(f"a:{slot}"))
+        for child in list(el):
+            el.remove(child)
+        etree.SubElement(el, qn("a:srgbClr"), val=str(rgb))
+
+    fonts = elements.find(qn("a:fontScheme"))
+    fonts.set("name", T.THEME_NAME)
+    for kind in ("a:majorFont", "a:minorFont"):
+        font = fonts.find(qn(kind))
+        font.find(qn("a:latin")).set("typeface", T.FONT_CJK)
+        font.find(qn("a:ea")).set("typeface", T.FONT_CJK)
+        for script_font in font.findall(qn("a:font")):
+            if script_font.get("script") == "Hant":
+                script_font.set("typeface", T.FONT_CJK)
+
+    part.blob = etree.tostring(root, xml_declaration=True, encoding="UTF-8", standalone=True)
+    return prs
+
 # ---------------------------------------------------------------- text core
 def _set_run(r, text, *, color=T.INK, size=T.S_BODY, bold=False, mono=False, italic=False):
     r.text = text

@@ -18,6 +18,7 @@ import relationship_layouts as R
 def build(output):
     prs = Presentation()
     prs.slide_width, prs.slide_height = T.SLIDE_W, T.SLIDE_H
+    P.apply_deck_theme(prs)
     def slide(title, support):
         s = prs.slides.add_slide(prs.slide_layouts[6])
         P.add_background(s)
