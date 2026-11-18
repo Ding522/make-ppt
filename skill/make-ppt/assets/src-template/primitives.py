@@ -41,7 +41,7 @@ def apply_deck_theme(prs):
     Rendering does not depend on this (primitives set explicit RGB and typefaces), but
     without it PowerPoint's theme color picker shows Office blue/orange, new objects use
     Calibri, and the master background is white. The master background references the
-    `bg1` slot, so mapping `lt1` to BG makes new slides warm off-white too."""
+    `bg1` slot, so mapping `lt1` to BG gives new slides the palette background too."""
     from lxml import etree
     from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 
@@ -480,10 +480,10 @@ def add_technical_node(slide, x, y, w, h, title, *, sub=None, fill=T.PANEL_BG,
 def add_terminal_panel(slide, x, y, w, h, title, lines, *, badge=None, badge_bg=T.RED):
     """Dark terminal/config evidence panel with mac traffic lights.
     lines: list of paragraphs; each paragraph = list of (text, opts) mono runs.
-    Highlight secrets with {"color": T.RED} or chip-like {"color": T.ORANGE}."""
+    Highlight secrets with {"color": T.RED} or chip-like {"color": T.ACCENT_ON_DARK}."""
     panel = add_panel(slide, x, y, w, h, fill=T.DARK_PANEL, line=None)
     # traffic lights
-    for i, c in enumerate((T.RED, T.ORANGE, T.GREEN)):
+    for i, c in enumerate((T.RED, T.ACCENT_ON_DARK, T.GREEN)):
         dot = slide.shapes.add_shape(MSO_SHAPE.OVAL,
                                      x + Inches(0.16 + i * 0.22), y + Inches(0.14),
                                      Inches(0.11), Inches(0.11))
@@ -525,7 +525,8 @@ def add_cover_slide(slide, title_segments, *, variant="editorial-light", context
     optional bottom scope/highlight line.
 
     ``footer_highlight`` is truly optional. Never invent a fixed count or summary such
-    as "三件事" merely to fill the bottom of a dark cover.
+    as "三件事" merely to fill the bottom of a dark cover. Title emphasis on
+    ``report-dark`` uses ``T.ACCENT_ON_DARK``, never ``T.ORANGE``.
     """
     if variant not in {"editorial-light", "report-dark"}:
         raise ValueError(f"unknown cover variant: {variant}")
@@ -564,7 +565,7 @@ def add_cover_slide(slide, title_segments, *, variant="editorial-light", context
             eb, ef = textbox(slide, T.MARGIN_X, Inches(1.55), Inches(8.4), Inches(0.34))
             rich_par(
                 ef,
-                [(eyebrow, {"color": T.ORANGE, "mono": True, "bold": True, "size": T.S_EYEBROW})],
+                [(eyebrow, {"color": T.ACCENT_ON_DARK, "mono": True, "bold": True, "size": T.S_EYEBROW})],
                 first=True,
             )
 
@@ -577,7 +578,7 @@ def add_cover_slide(slide, title_segments, *, variant="editorial-light", context
         rich_par(tf, title_opts, size=T.S_COVER_TITLE_DARK, first=True, line=1.02)
 
         accent_y = Inches(3.82)
-        add_hairline(slide, accent_y, w=Inches(1.55), color=T.ORANGE, weight=Pt(3.0))
+        add_hairline(slide, accent_y, w=Inches(1.55), color=T.ACCENT_ON_DARK, weight=Pt(3.0))
         if subtitle:
             sb, sf = textbox(slide, T.MARGIN_X, Inches(4.05), Inches(10.7), Inches(0.6))
             rich_par(
@@ -603,7 +604,7 @@ def add_cover_slide(slide, title_segments, *, variant="editorial-light", context
             fb, ff = textbox(slide, T.MARGIN_X, T.SLIDE_H - Inches(0.88), Inches(11.5), Inches(0.38))
             rich_par(
                 ff,
-                [(footer_highlight, {"color": T.ORANGE, "mono": True, "bold": True, "size": T.S_SUPPORT})],
+                [(footer_highlight, {"color": T.ACCENT_ON_DARK, "mono": True, "bold": True, "size": T.S_SUPPORT})],
                 first=True,
             )
     else:
@@ -659,8 +660,10 @@ def add_cover_slide(slide, title_segments, *, variant="editorial-light", context
 
 def add_section_slide(slide, number, part_label, title_segments, bullets, nav, active_idx,
                       *, corner_badge=None, context=None):
-    """Dark section divider: giant orange number, PART label, white title with orange
+    """Dark section divider: giant accent number, PART label, white title with accent
     emphasis, bullet preview, bottom nav of all parts with the active one lit.
+    Title emphasis on this dark slide uses {"color": T.ACCENT_ON_DARK}, never T.ORANGE
+    (in mono-print, ORANGE equals the INK background).
 
     `context` is the mono line at the top-left: the deck's REAL context (topic / team /
     date), defaulting to T.DECK_CONTEXT. Never pass invented event or summit branding —
@@ -674,27 +677,26 @@ def add_section_slide(slide, number, part_label, title_segments, bullets, nav, a
     rich_par(hf, [(corner_badge or "SECTION", {"color": T.DARK_PANEL_MUTED, "mono": True, "size": 12})],
              align=PP_ALIGN.RIGHT, first=True)
     nb, nf = textbox(slide, T.MARGIN_X, Inches(2.35), Inches(3.9), Inches(2.6), wrap=False)
-    rich_par(nf, [(f"{number:02d}", {"color": T.ORANGE, "bold": True, "size": T.S_SECTION_NUM, "mono": True})], first=True)
+    rich_par(nf, [(f"{number:02d}", {"color": T.ACCENT_ON_DARK, "bold": True, "size": T.S_SECTION_NUM, "mono": True})], first=True)
     pb, pf = textbox(slide, Inches(4.1), Inches(2.35), Inches(8.4), Inches(0.35))
-    rich_par(pf, [(part_label, {"color": T.ORANGE, "mono": True, "bold": True, "size": 15})], first=True)
+    rich_par(pf, [(part_label, {"color": T.ACCENT_ON_DARK, "mono": True, "bold": True, "size": 15})], first=True)
     ttb, ttf = textbox(slide, Inches(4.1), Inches(2.75), Inches(8.6), Inches(1.0))
     segs = [(t, dict({"bold": True, "size": 38, "color": T.ON_DARK}, **(o or {}))) for t, o in title_segments]
     rich_par(ttf, segs, first=True)
     bb, bf = textbox(slide, Inches(4.3), Inches(3.85), Inches(8.2), Inches(2.2))
     for i, b in enumerate(bullets):
-        rich_par(bf, [("·  ", {"color": T.ORANGE, "size": 13, "bold": True}),
+        rich_par(bf, [("·  ", {"color": T.ACCENT_ON_DARK, "size": 13, "bold": True}),
                       (b, {"color": RGB_soft_on_dark(), "size": 13})],
                  first=(i == 0), space_after=7)
     xs = [T.MARGIN_X, Inches(4.9), Inches(9.0)]
     for i, label in enumerate(nav):
         on = (i == active_idx)
         vb, vf = textbox(slide, xs[i], T.SLIDE_H - Inches(0.66), Inches(3.8), Inches(0.3))
-        rich_par(vf, [(f"{i+1:02d}  ", {"color": T.ORANGE if on else T.DARK_PANEL_MUTED, "mono": True, "bold": on, "size": 12}),
+        rich_par(vf, [(f"{i+1:02d}  ", {"color": T.ACCENT_ON_DARK if on else T.DARK_PANEL_MUTED, "mono": True, "bold": on, "size": 12}),
                       (label, {"color": T.ON_DARK if on else T.DARK_PANEL_MUTED, "size": 12, "bold": on})], first=True)
 
 def RGB_soft_on_dark():
-    from pptx.dml.color import RGBColor
-    return RGBColor(0xCF, 0xC9, 0xC0)
+    return T.SOFT_ON_DARK
 
 def add_screenshot(slide, img_path, x, y, *, max_w, max_h, frame=True):
     """Place a raster source screenshot preserving aspect ratio (fit inside max box).

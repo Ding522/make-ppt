@@ -94,13 +94,20 @@ For an outline task, follow these responsibilities:
    user choice wins; if the context is genuinely ambiguous, use `editorial-light`.
    Subtitle and Footer Highlight are optional. Never invent a fixed count, KPI summary,
    or `三件事` footer to make a dark cover look full.
+   Select exactly one deck Palette and record it with a one-line reason:
+   `warm-editorial` for a technical share, adoption story, case study, or retrospective;
+   `nord-slate` for architecture, cloud/infrastructure, security, or technical
+   specifications; `mono-print` for formal documents, printed or grayscale output, or
+   audit/compliance reports. An explicit user choice wins; if the context is genuinely
+   ambiguous, use `warm-editorial`. Present it at Checkpoint 1 so the user can override
+   it. Palette and Cover Variant are chosen independently.
 7. Write titles as arguments, not topic labels, per title-philosophy.md — defensible,
    never artificially dramatized. Specify phrase-level orange emphasis explicitly.
 8. Apply the Golden Circle Lens before choosing slide order. Record a compact Why,
    How, What, and Natural Engineering Angle in the outline's global narrative section;
    these are planning checks, not mandatory visible section labels.
 9. Write `presentation/outline.md` with the Global Presentation Specification,
-   Narrative Strategy, Core Narrative, Narrative Review, Content Tone, Design System,
+   Narrative Strategy, Core Narrative, Narrative Review, Content Tone, Palette, Design System,
    Global Content Constraints, Slide Architecture (one line per slide), and a full
    Per-Slide Specification for every slide (Slide Role / Purpose / Argument / Key
    Message / Title / Title Emphasis / Eyebrow / Cover Variant / Supporting Sentence /

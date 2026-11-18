@@ -6,7 +6,7 @@ description: Create, build, revise, or locally edit editable PowerPoint / 簡報
 # Make PPT
 
 This skill produces complete, editable PowerPoint decks in one fixed personal style
-(warm off-white, near-black editorial typography, orange emphasis — see
+grammar (editorial typography and a single emphasis color — see
 `references/style-guide.md`). The workflow carries raw source materials through to a
 rendered deck, pausing at **two review checkpoints** — after the outline, and after a
 small style sample — so the user can confirm direction before the full deck is built.
@@ -16,7 +16,11 @@ outline is written.
 The grammar includes two controlled cover variants within that same style:
 `editorial-light` for technical/editorial narratives and `report-dark` for monthly,
 progress, performance, and status reporting. Cover copy slots remain optional and
-source-grounded.
+source-grounded. Colors come from one of three controlled palettes with identical
+token semantics: `warm-editorial` (default; warm off-white, near-black, orange),
+`nord-slate` (cool slate for architecture/security/specs), and `mono-print`
+(black and white for formal or printed reports). The planner proposes the palette in
+`outline.md` and the user confirms it at Checkpoint 1.
 
 ## Portable execution contract
 
@@ -206,7 +210,8 @@ findings and review contextual findings.
 ### Checkpoint 1 — Confirm the outline (hard pause)
 
 After `outline.md` exists, do NOT invoke the builder yet. Present a concise outline
-summary: the planned slide count (User Requested vs Actual Planned), a one-line-per-slide
+summary: the planned slide count (User Requested vs Actual Planned), the selected Palette
+with its one-line reason, a one-line-per-slide
 list of each slide's title/argument, the Narrative Review result, and any key assumptions
 or source conflicts recorded in the outline. If the review finds a weak transition, name
 the affected slide pair and proposed adjustment so the user can confirm it before the

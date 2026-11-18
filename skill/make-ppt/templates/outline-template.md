@@ -84,9 +84,20 @@ technical share, adoption story, case study, or implementation retrospective →
 delivery report → `report-dark`. Explicit user choice wins; ambiguous →
 `editorial-light`.>
 
+## Palette
+
+<Exactly one of `warm-editorial` / `nord-slate` / `mono-print`, with a one-line reason.
+Infer from presentation context: technical share, adoption story, case study, or
+retrospective → `warm-editorial`; architecture, cloud/infrastructure, security, or
+technical specification → `nord-slate`; formal document, printed or grayscale output,
+audit/compliance report → `mono-print`. Explicit user choice wins; ambiguous →
+`warm-editorial`. Confirmed at Checkpoint 1. The builder sets `PALETTE` in theme.py.>
+
 ## Design System
 
 - Canvas: 16:9 (13.333" × 7.5")
+- Palette: <value from Palette>; colors below are the `warm-editorial` values — the
+  other palettes keep the same token roles (see style-guide.md §2)
 - Background: #FAF8F4 warm off-white; dark slides #1A1714
 - Primary Text: #1A1714 / body #4A443D
 - Primary Accent: #D75F00 orange (emphasis device only)

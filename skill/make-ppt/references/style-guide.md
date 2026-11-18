@@ -18,7 +18,8 @@ binding as the visual rules below.
 ## 1. Canvas & page scaffold
 
 - 16:9 widescreen (13.333" × 7.5").
-- Content slides: warm off-white background `#FAF8F4`; ~0.62" left/right margins.
+- Content slides: palette `BG` background (`#FAF8F4` warm off-white in the default
+  `warm-editorial` palette; see §2); ~0.62" left/right margins.
 - Standard content-slide skeleton, top to bottom:
   1. **Eyebrow** (upper-left, mono, orange): `// NN    section · context`
   2. **Argument title** (large, heavy, near-black, phrase-level orange emphasis)
@@ -46,38 +47,68 @@ binding as the visual rules below.
 - A cover's subtitle and bottom highlight are **optional content**, not decorative slots.
   Omit them when unsupported or unnecessary. Never invent a fixed count, KPI summary,
   or phrase such as `三件事` merely to fill the `report-dark` footer.
-- Section and closing slides may still invert to near-black `#1A1714`; section dividers
+- Section and closing slides may still invert to the palette's dark `INK`; section dividers
   use `add_section_slide()`. The context line on every dark slide states the deck's own
   real topic, team, and/or date. Never invent event branding (no fabricated summit or
   conference names, no `20XX XXX SUMMIT / TAIWAN` chrome).
 
-## 2. Palette (sampled values — use exactly these)
+## 2. Palette (controlled palettes — use exactly these)
 
-| Token | Hex | Semantics |
-|---|---|---|
-| BG | `#FAF8F4` | warm off-white page background |
-| INK | `#1A1714` | primary text; also dark-slide & dark-panel background |
-| INK_SOFT | `#4A443D` | body text on light bg |
-| MUTED | `#8A8177` | supporting sentences, inactive labels, captions |
-| HAIRLINE | `#DED8CE` | thin dividers, light panel borders |
-| ORANGE | `#D75F00` | **the** emphasis color |
-| GREEN | `#3E8E5A` | positive / success / accepted / completed / human checkpoint |
-| RED | `#C13227` | risk / rejection / vulnerability / security concern / failure |
-| BLUE | `#3972DA` | information / technical category / tool semantics |
-| DARK_PANEL | `#1F1B17` | terminal & root-cause panels |
+Every deck uses exactly one of three controlled palettes. The layout grammar,
+typography, and color semantics stay identical; only token values change. The outline
+records the choice as `Palette`; the builder sets `PALETTE` in `theme.py` once and
+never hardcodes colors per slide.
 
-The same palette is written into the PowerPoint theme (`T.THEME_COLORS`, applied by
+- **`warm-editorial`** — default. Technical shares, adoption stories, case studies,
+  implementation retrospectives. Sampled from the primary reference.
+- **`nord-slate`** — cool slate based on Nord. Architecture design, cloud /
+  infrastructure, security, and technical specifications.
+- **`mono-print`** — black and white. Formal documents, decks that will be printed or
+  shared in grayscale, audit and compliance reports. Emphasis is ink + weight + accent
+  rules; color appears only for the RED / GREEN / BLUE semantics.
+
+Infer the palette from the presentation context; an explicit user choice overrides
+inference. When the context is genuinely ambiguous, use `warm-editorial`. Palette and
+Cover Variant are independent (for example `nord-slate` + `report-dark`).
+
+| Token | warm-editorial | nord-slate | mono-print | Semantics |
+|---|---|---|---|---|
+| BG | `#FAF8F4` | `#ECEFF4` | `#FFFFFF` | page background |
+| INK | `#1A1714` | `#2E3440` | `#111111` | primary text; also dark-slide background |
+| INK_SOFT | `#4A443D` | `#4C566A` | `#444444` | body text on light bg |
+| MUTED | `#8A8177` | `#6F7889` | `#767676` | supporting sentences, inactive labels, captions |
+| HAIRLINE | `#DED8CE` | `#D8DEE9` | `#D9D9D9` | thin dividers, light panel borders |
+| ORANGE | `#D75F00` | `#B8603E` | `#111111` | **the** emphasis color on light surfaces |
+| ACCENT_ON_DARK | `#D75F00` | `#D08770` | `#FFFFFF` | emphasis on INK / DARK_PANEL surfaces |
+| GREEN | `#3E8E5A` | `#5D8A4E` | `#2E7D4F` | positive / success / accepted / completed / human checkpoint |
+| RED | `#C13227` | `#B04A55` | `#B3261E` | risk / rejection / vulnerability / security concern / failure |
+| BLUE | `#3972DA` | `#3F6A9A` | `#2B5FA8` | information / technical category / tool semantics |
+| DARK_PANEL | `#1F1B17` | `#3B4252` | `#1E1E1E` | terminal & root-cause panels |
+
+`theme.py` also defines the derived tokens (`PANEL_BG`, `PANEL_LN`, `ORANGE_SOFT`,
+`DARK_PANEL_TXT`, `DARK_PANEL_MUTED`, `ON_DARK`, `SOFT_ON_DARK`) for every palette.
+`ORANGE` keeps its historical name but means "the palette's emphasis slot". On dark
+slides (`report-dark` cover, section dividers, terminal panels) emphasis uses
+`ACCENT_ON_DARK`, never `ORANGE` — in `mono-print` `ORANGE` equals the dark background.
+In `mono-print`, title phrase emphasis has no color contrast because titles are already
+bold; write titles whose argument stands without color emphasis.
+
+Switching the palette of an existing deck changes shared theme tokens and follows the
+full rebuild confirmation rule in `cost-control-workflow.md`.
+
+The selected palette is written into the PowerPoint theme (`T.THEME_COLORS`, applied by
 `apply_deck_theme`) so manual edits can pick deck colors from the theme color picker:
 Dark 1 = INK, Light 1 = BG, Dark 2 = INK_SOFT, Light 2 = HAIRLINE, Accent 1 = ORANGE,
-Accent 2–3 = theme-only sand `#E8DCCB` / brown `#8C6E54`, Accent 4–6 = RED / GREEN /
-BLUE, Hyperlink = BLUE, Followed = MUTED. Sand and brown keep the picker beige/brown-led
-for manual edits; they are not slide palette tokens.
+Accent 2–3 = theme-only tones (`THEME_TONE_LIGHT` / `THEME_TONE_DARK`, e.g. sand
+`#E8DCCB` / brown `#8C6E54` in `warm-editorial`), Accent 4–6 = RED / GREEN / BLUE,
+Hyperlink = BLUE, Followed = MUTED. The theme-only tones keep the picker led by the
+palette's own hues for manual edits; they are not slide palette tokens.
 Theme fonts are `Noto Sans TC`. Generated objects still use explicit RGB values.
 
 **Color is semantics, never decoration.** Never alternate colors for variety. Never
-color a whole slide orange — orange is an emphasis device: the decisive phrase in a
-title, an important number, the active flow, a key arrow, a mechanism name, an
-emphasized conclusion, an accent rule. The reference uses orange in perhaps 5–10% of
+color a whole slide with the emphasis color — it is an emphasis device: the decisive
+phrase in a title, an important number, the active flow, a key arrow, a mechanism name,
+an emphasized conclusion, an accent rule. The reference uses orange in perhaps 5–10% of
 any slide's area; the rest is ink, muted gray, and whitespace.
 
 ## 3. Typography

@@ -1,5 +1,6 @@
 # theme.py — design tokens for the make-ppt visual grammar.
-# Values are extracted from the fixed visual reference (AI_Agentic_Coding_導入實戰.pdf).
+# warm-editorial values are extracted from the fixed visual reference
+# (AI_Agentic_Coding_導入實戰.pdf); the other palettes reuse the same token semantics.
 # Every slide module imports from here. Never hardcode colors/sizes in slide code.
 
 from pptx.util import Inches, Pt, Emu
@@ -15,42 +16,88 @@ TITLE_Y = Inches(0.86)     # title top for standard content slides
 CONTENT_W = SLIDE_W - 2 * MARGIN_X
 
 # ---------------------------------------------------------------- palette
-BG        = RGBColor(0xFA, 0xF8, 0xF4)  # warm off-white / light ivory
-INK       = RGBColor(0x1A, 0x17, 0x14)  # near-black (also dark panel/section bg)
-INK_SOFT  = RGBColor(0x4A, 0x44, 0x3D)  # dark warm gray body text
-MUTED     = RGBColor(0x8A, 0x81, 0x77)  # supporting / inactive warm gray
-HAIRLINE  = RGBColor(0xDE, 0xD8, 0xCE)  # thin dividers
-PANEL_BG  = RGBColor(0xFF, 0xFF, 0xFE)  # light card/panel fill (barely off bg)
-PANEL_LN  = RGBColor(0xE4, 0xDE, 0xD4)  # light panel border
+# Set PALETTE ONCE per deck from outline.md `Palette`. Every palette defines the same
+# tokens with the same semantics, so slide code and primitives never branch on it.
+# ORANGE is the palette's single emphasis slot (orange / burnt orange / ink), kept under
+# its historical name. ACCENT_ON_DARK is that emphasis on INK / DARK_PANEL surfaces.
+PALETTE = "warm-editorial"
 
-ORANGE    = RGBColor(0xD7, 0x5F, 0x00)  # primary emphasis (decisive phrases, key arrows, rules)
-ORANGE_SOFT = RGBColor(0xF6, 0xE3, 0xD2)  # pale orange fill for highlighted chips inside panels
-GREEN     = RGBColor(0x3E, 0x8E, 0x5A)  # success / accepted / human checkpoint
-RED       = RGBColor(0xC1, 0x32, 0x27)  # risk / rejected / vulnerability / failure
-BLUE      = RGBColor(0x39, 0x72, 0xDA)  # information / tool / technical category
-DARK_PANEL = RGBColor(0x1F, 0x1B, 0x17) # terminal panel background
-DARK_PANEL_TXT = RGBColor(0xE9, 0xE4, 0xDC)
-DARK_PANEL_MUTED = RGBColor(0x8F, 0x87, 0x7C)
+PALETTES = {
+    # Default: technical shares, adoption stories, case studies, retrospectives.
+    "warm-editorial": dict(
+        BG="FAF8F4", INK="1A1714", INK_SOFT="4A443D", MUTED="8A8177", HAIRLINE="DED8CE",
+        PANEL_BG="FFFFFE", PANEL_LN="E4DED4",
+        ORANGE="D75F00", ORANGE_SOFT="F6E3D2", ACCENT_ON_DARK="D75F00",
+        GREEN="3E8E5A", RED="C13227", BLUE="3972DA",
+        DARK_PANEL="1F1B17", DARK_PANEL_TXT="E9E4DC", DARK_PANEL_MUTED="8F877C",
+        ON_DARK="F5F2EC", SOFT_ON_DARK="CFC9C0",
+        THEME_TONE_LIGHT="E8DCCB", THEME_TONE_DARK="8C6E54",
+    ),
+    # Cool slate (based on Nord): architecture, cloud / security, technical specs.
+    "nord-slate": dict(
+        BG="ECEFF4", INK="2E3440", INK_SOFT="4C566A", MUTED="6F7889", HAIRLINE="D8DEE9",
+        PANEL_BG="F7F9FB", PANEL_LN="D2D9E3",
+        ORANGE="B8603E", ORANGE_SOFT="F2DDD3", ACCENT_ON_DARK="D08770",
+        GREEN="5D8A4E", RED="B04A55", BLUE="3F6A9A",
+        DARK_PANEL="3B4252", DARK_PANEL_TXT="D8DEE9", DARK_PANEL_MUTED="8C96A8",
+        ON_DARK="ECEFF4", SOFT_ON_DARK="C9D1DD",
+        THEME_TONE_LIGHT="C9D3E0", THEME_TONE_DARK="5E81AC",
+    ),
+    # Black and white: formal documents, printed / grayscale output, audit reports.
+    # Emphasis is ink + weight + accent rules, so it never reads as the RED risk color.
+    "mono-print": dict(
+        BG="FFFFFF", INK="111111", INK_SOFT="444444", MUTED="767676", HAIRLINE="D9D9D9",
+        PANEL_BG="FAFAFA", PANEL_LN="D9D9D9",
+        ORANGE="111111", ORANGE_SOFT="EEEEEE", ACCENT_ON_DARK="FFFFFF",
+        GREEN="2E7D4F", RED="B3261E", BLUE="2B5FA8",
+        DARK_PANEL="1E1E1E", DARK_PANEL_TXT="EAEAEA", DARK_PANEL_MUTED="9A9A9A",
+        ON_DARK="FFFFFF", SOFT_ON_DARK="CCCCCC",
+        THEME_TONE_LIGHT="EEEEEE", THEME_TONE_DARK="777777",
+    ),
+}
 
-ON_DARK   = RGBColor(0xF5, 0xF2, 0xEC)  # primary text on dark backgrounds
+if PALETTE not in PALETTES:
+    raise ValueError(f"unknown palette: {PALETTE!r}; choose one of {sorted(PALETTES)}")
+_P = {name: RGBColor.from_string(value) for name, value in PALETTES[PALETTE].items()}
+
+BG        = _P["BG"]          # page background
+INK       = _P["INK"]         # primary text; also dark section / cover background
+INK_SOFT  = _P["INK_SOFT"]    # body text on light bg
+MUTED     = _P["MUTED"]       # supporting / inactive
+HAIRLINE  = _P["HAIRLINE"]    # thin dividers
+PANEL_BG  = _P["PANEL_BG"]    # light card/panel fill (barely off bg)
+PANEL_LN  = _P["PANEL_LN"]    # light panel border
+
+ORANGE    = _P["ORANGE"]      # the emphasis color on light surfaces
+ORANGE_SOFT = _P["ORANGE_SOFT"]  # pale emphasis fill for highlighted chips inside panels
+ACCENT_ON_DARK = _P["ACCENT_ON_DARK"]  # emphasis on INK / DARK_PANEL surfaces
+GREEN     = _P["GREEN"]       # success / accepted / human checkpoint
+RED       = _P["RED"]         # risk / rejected / vulnerability / failure
+BLUE      = _P["BLUE"]        # information / tool / technical category
+DARK_PANEL = _P["DARK_PANEL"]  # terminal panel background
+DARK_PANEL_TXT = _P["DARK_PANEL_TXT"]
+DARK_PANEL_MUTED = _P["DARK_PANEL_MUTED"]
+
+ON_DARK   = _P["ON_DARK"]     # primary text on dark backgrounds
+SOFT_ON_DARK = _P["SOFT_ON_DARK"]  # secondary text on dark backgrounds
 
 # ---------------------------------------------------------------- PowerPoint theme
 # Written into ppt/theme/theme1.xml by primitives.apply_deck_theme() so manual edits in
 # PowerPoint see the deck palette in the theme color picker, and new shapes, text, and
 # slides default to it. Slide code still applies explicit RGB values from the palette
-# above; these slots never replace those tokens. SAND/BROWN exist only so the theme
-# picker is beige/brown-led for manual edits — slide code does not use them.
-THEME_NAME = "make-ppt"
-THEME_SAND  = RGBColor(0xE8, 0xDC, 0xCB)
-THEME_BROWN = RGBColor(0x8C, 0x6E, 0x54)
+# above; these slots never replace those tokens. THEME_TONE_* exist only so the theme
+# picker leads with the palette's own tones for manual edits — slide code does not use them.
+THEME_NAME = f"make-ppt {PALETTE}"
+THEME_TONE_LIGHT = _P["THEME_TONE_LIGHT"]
+THEME_TONE_DARK  = _P["THEME_TONE_DARK"]
 THEME_COLORS = {
     "dk1": INK,
     "lt1": BG,
     "dk2": INK_SOFT,
     "lt2": HAIRLINE,
     "accent1": ORANGE,
-    "accent2": THEME_SAND,
-    "accent3": THEME_BROWN,
+    "accent2": THEME_TONE_LIGHT,
+    "accent3": THEME_TONE_DARK,
     "accent4": RED,
     "accent5": GREEN,
     "accent6": BLUE,

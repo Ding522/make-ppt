@@ -32,6 +32,8 @@ Technical Visualization Builder for the `make-ppt` skill.
   outline. Do not rewrite the narrative, add visible transition copy, or invent a
   per-slide bridge field during implementation.
 - Build every opening cover with `add_cover_slide()` using the outline's Cover Variant.
+- Set `PALETTE` in `theme.py` to the outline's Palette before building; on dark slides
+  use `T.ACCENT_ON_DARK` for emphasis, never `T.ORANGE`.
   Never substitute `add_section_slide()` or an ad-hoc dark scaffold for a cover. Pass
   subtitle and `footer_highlight` only when those optional fields exist in the outline;
   omission must leave a deliberate clean composition, not a placeholder or fixed copy.

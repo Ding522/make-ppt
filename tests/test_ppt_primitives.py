@@ -222,5 +222,63 @@ class DeckThemeTests(unittest.TestCase):
         self.assertEqual("bg1", bg_ref.find(qn("a:schemeClr")).get("val"))
 
 
+class PaletteTests(unittest.TestCase):
+    DEFAULT_LINE = 'PALETTE = "warm-editorial"'
+    SCRIPT = (
+        "import sys; sys.path.insert(0, sys.argv[1])\n"
+        "import build, primitives as P\n"
+        "prs = build.new_presentation()\n"
+        "P.add_section_slide(build.blank_slide(prs), 1, 'PART 01', [('章節標題', {})],\n"
+        "                    ['重點'], ['一', '二', '三'], 0, corner_badge='SECTION')\n"
+        "P.add_cover_slide(build.blank_slide(prs), [('月報', {})], variant='report-dark',\n"
+        "                  eyebrow='2026 · REPORT', subtitle='範圍', presenter='講者',\n"
+        "                  footer_highlight='重點')\n"
+        "prs.save(sys.argv[2])\n"
+    )
+
+    def _build_with_palette(self, root: Path, palette: str):
+        import shutil
+
+        src = root / "src"
+        shutil.copytree(TEMPLATE_DIR, src)
+        theme_path = src / "theme.py"
+        text = theme_path.read_text(encoding="utf-8")
+        self.assertEqual(1, text.count(self.DEFAULT_LINE))
+        theme_path.write_text(
+            text.replace(self.DEFAULT_LINE, f'PALETTE = "{palette}"'), encoding="utf-8"
+        )
+        out = root / "deck.pptx"
+        result = subprocess.run(
+            [sys.executable, "-c", self.SCRIPT, str(src), str(out)],
+            capture_output=True,
+            text=True,
+        )
+        return result, out
+
+    def test_dark_slide_text_stays_visible_in_every_palette(self) -> None:
+        for palette in T.PALETTES:
+            with self.subTest(palette=palette), tempfile.TemporaryDirectory() as temporary:
+                result, out = self._build_with_palette(Path(temporary), palette)
+                self.assertEqual(0, result.returncode, result.stderr)
+                ink = T.PALETTES[palette]["INK"]
+                for slide in Presentation(out).slides:
+                    background = str(slide.background.fill.fore_color.rgb)
+                    self.assertEqual(ink, background)
+                    for shape in slide.shapes:
+                        if not getattr(shape, "has_text_frame", False):
+                            continue
+                        for paragraph in shape.text_frame.paragraphs:
+                            for run in paragraph.runs:
+                                self.assertNotEqual(
+                                    background, str(run.font.color.rgb), run.text
+                                )
+
+    def test_unknown_palette_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            result, _ = self._build_with_palette(Path(temporary), "neon")
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("unknown palette", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

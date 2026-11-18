@@ -77,7 +77,8 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
 
 ## Hard technical rules
 
-1. **Blank layout only**: `prs.slide_layouts[6]`; set slide size 13.333"×7.5" and call
+1. **Blank layout only**: `prs.slide_layouts[6]`; set `PALETTE` in `theme.py` from the
+   outline's Palette, set slide size 13.333"×7.5", and call
    `apply_deck_theme(prs)` (done by `build.py`'s `new_presentation()`) before adding
    slides, so the PowerPoint theme colors, theme fonts, and master background match the
    palette for manual editing.
@@ -90,7 +91,7 @@ Kanban columns, gateway blocks) rather than one-off code in slides.
    left-align body text.
 4. **Editability**: everything native except source screenshots/photos. Screenshots
    via `add_screenshot` (fit-inside, never stretched). Charts via python-pptx native
-   charts, styled to the palette (orange primary series, hairline gridlines, value
+   charts, styled to the palette (`T.ORANGE` primary series, hairline gridlines, value
    labels, no legend for a single series).
 5. **Numbers on slides** come only from `outline.md` Source Facts. No placeholder
    numbers, ever.

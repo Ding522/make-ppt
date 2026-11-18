@@ -23,3 +23,7 @@ _Avoid_: 用 prompt 清楚度猜測 strict、用 strict 跳過 outline 確認
 **修改影響分類（Edit Impact Classification）**：
 修改現有簡報前，先區分小型局部修改、單頁結構修改、跨頁修改、敘事重整與 full rebuild candidate。非小型修改先留下 `edit-impact.md`；高成本重建需明確確認。
 _Avoid_: 把局部要求擴張成 redesign、未回到文字階段就直接重做整份 deck
+
+**受控色票（palette）**：
+每份簡報選定一套色票：`warm-editorial`（預設）、`nord-slate` 或 `mono-print`。每套色票的 token 語意都相同，版面語法也不變，只有色值不同。Planner 依報告類型建議色票，使用者在 Checkpoint 1 確認。
+_Avoid_: 同一份簡報混用多套色票、在投影片程式中寫死色值、為了變化輪替顏色

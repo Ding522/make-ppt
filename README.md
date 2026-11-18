@@ -14,6 +14,7 @@
 - 先產生 1–2 頁 style sample，確認視覺方向後再完成全份簡報。
 - 輸出物件層級可編輯的 PowerPoint，而不是整頁圖片。
 - 支援 `editorial-light` 與 `report-dark` 兩種受控封面變體。
+- 提供三套受控色票：`warm-editorial`（預設暖米棕）、`nord-slate`（北境灰藍）、`mono-print`（極簡黑白）；Planner 依報告類型建議，於大綱確認時決定。
 - 提供 timeline、status matrix 等關係型版面元件。
 - 修改既有簡報時先判斷影響範圍，小修改維持局部更新。
 - 檢查台灣繁體中文用語，不自動取代需要人工判斷的詞彙。

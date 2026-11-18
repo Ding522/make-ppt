@@ -59,6 +59,10 @@ technical · factual · concise · evidence-oriented · direct · implementation
 `editorial-light` — technical implementation share; subtitle and presenter/date footer
 are useful, but Footer Highlight is omitted.
 
+## Palette
+
+`nord-slate` — 認證閘道與 token 治理屬於架構／資安主題。
+
 ## Design System
 
 （同 outline-template.md 預設；CJK font: Noto Sans TC（已驗證）；Mono: Consolas（已驗證））
