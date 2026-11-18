@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="872" height="352" viewBox="0 0 872 352" role="img" aria-label="make-ppt 製作流程：來源資料、evidence pack、敘事方向、outline.md、確認大綱、樣張、確認風格、完整簡報">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#8A8177"/>
+  </marker>
+</defs>
+<style>
+  .t { font-family: 'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif; }
+  .m { font-family: Consolas,Menlo,monospace; }
+  .title { font-size: 14px; font-weight: bold; fill: #1A1714; text-anchor: middle; }
+  .sub { font-size: 11px; fill: #8A8177; text-anchor: middle; }
+  .ctitle { font-size: 14px; font-weight: bold; fill: #F5F2EC; text-anchor: middle; }
+  .csub { font-size: 11px; fill: #F6E3D2; text-anchor: middle; }
+  .band { font-size: 11px; fill: #D75F00; }
+  .note { font-size: 11px; fill: #8A8177; }
+  .node { fill: #FFFFFE; stroke: #E4DED4; }
+  .check { fill: #D75F00; }
+  .flow { stroke: #8A8177; stroke-width: 1.5; fill: none; }
+  .loop { stroke: #8A8177; stroke-width: 1.2; fill: none; stroke-dasharray: 4 3; }
+</style>
+
+<rect x="0" y="0" width="872" height="352" rx="8" fill="#FAF8F4"/>
+
+<!-- Planner band -->
+<rect x="6.5" y="6.5" width="859" height="150" rx="6" fill="none" stroke="#DED8CE"/>
+<text x="20" y="28" class="m band">// PLANNER  規劃與大綱</text>
+
+<rect x="14" y="62" width="136" height="64" rx="5" class="node"/>
+<text x="82" y="90" class="t title">來源資料</text>
+<text x="82" y="110" class="t sub">報告、紀錄、POC</text>
+
+<rect x="191" y="62" width="136" height="64" rx="5" class="node"/>
+<text x="259" y="90" class="t title">evidence pack</text>
+<text x="259" y="110" class="t sub">數字與結論的出處</text>
+
+<rect x="368" y="62" width="136" height="64" rx="5" class="node"/>
+<text x="436" y="90" class="t title">敘事方向</text>
+<text x="436" y="110" class="t sub">不明確時給三個選項</text>
+
+<rect x="545" y="62" width="136" height="64" rx="5" class="node"/>
+<text x="613" y="90" class="m title">outline.md</text>
+<text x="613" y="110" class="t sub">每頁要講什麼</text>
+
+<rect x="722" y="62" width="136" height="64" rx="5" class="check"/>
+<text x="790" y="90" class="t ctitle">確認點 1</text>
+<text x="790" y="110" class="t csub">你確認大綱</text>
+
+<line x1="152" y1="94" x2="189" y2="94" class="flow" marker-end="url(#arrow)"/>
+<line x1="329" y1="94" x2="366" y2="94" class="flow" marker-end="url(#arrow)"/>
+<line x1="506" y1="94" x2="543" y2="94" class="flow" marker-end="url(#arrow)"/>
+<line x1="683" y1="94" x2="720" y2="94" class="flow" marker-end="url(#arrow)"/>
+
+<path d="M770,60 C770,36 633,36 633,60" class="loop" marker-end="url(#arrow)"/>
+<text x="701" y="34" class="t note" text-anchor="middle">要改就回到大綱</text>
+
+<!-- checkpoint 1 -> builder -->
+<line x1="790" y1="128" x2="790" y2="208" class="flow" marker-end="url(#arrow)"/>
+<text x="800" y="170" class="t note">OK</text>
+
+<!-- Builder band -->
+<rect x="6.5" y="172.5" width="859" height="172" rx="6" fill="none" stroke="#DED8CE"/>
+<text x="20" y="194" class="m band">// BUILDER  照大綱製作</text>
+
+<rect x="722" y="210" width="136" height="64" rx="5" class="node"/>
+<text x="790" y="238" class="t title">1–2 頁樣張</text>
+<text x="790" y="258" class="t sub">先看風格對不對</text>
+
+<rect x="545" y="210" width="136" height="64" rx="5" class="check"/>
+<text x="613" y="238" class="t ctitle">確認點 2</text>
+<text x="613" y="258" class="t csub">你確認風格</text>
+
+<rect x="368" y="210" width="136" height="64" rx="5" class="node"/>
+<text x="436" y="238" class="t title">完整簡報</text>
+<text x="436" y="258" class="t sub">照大綱做完整份</text>
+
+<rect x="14" y="202" width="313" height="80" rx="5" fill="#1F1B17"/>
+<text x="30" y="224" class="m" font-size="11" fill="#E9E4DC">presentation.pptx</text>
+<text x="30" y="240" class="m" font-size="11" fill="#E9E4DC">preview/slide-*.png</text>
+<text x="30" y="256" class="m" font-size="11" fill="#E9E4DC">preview-contact-sheet.png</text>
+<text x="30" y="272" class="m" font-size="11" fill="#8F877C">src/  outline.md  evidence/</text>
+
+<line x1="720" y1="242" x2="683" y2="242" class="flow" marker-end="url(#arrow)"/>
+<line x1="543" y1="242" x2="506" y2="242" class="flow" marker-end="url(#arrow)"/>
+<text x="524" y="234" class="t note" text-anchor="middle">OK</text>
+<line x1="366" y1="242" x2="329" y2="242" class="flow" marker-end="url(#arrow)"/>
+
+<path d="M633,276 C633,306 770,306 770,276" class="loop" marker-end="url(#arrow)"/>
+<text x="701" y="322" class="t note" text-anchor="middle">要改就重做樣張</text>
+</svg>

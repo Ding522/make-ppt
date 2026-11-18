@@ -1,106 +1,107 @@
 # make-ppt
 
-`make-ppt` 是一個可攜式 Agent Skill，可將報告、專案紀錄、技術分享、POC、弱點改善資料與其他專案素材，整理成有來源依據、可編輯的 PowerPoint 簡報。
+把月報、技術分享、POC 結果、弱點改善紀錄這類專案資料，整理成一份可以直接在 PowerPoint 裡改的簡報。它是一個 Agent Skill，可以裝在 Codex、Claude Code、Kiro、GitHub Copilot 和 Google Antigravity。
 
-它不只輸出 `.pptx`，也會保留大綱、證據紀錄、可維護的產生程式、逐頁預覽與 contact sheet，讓簡報能被檢查、修改與持續維護。
-
-> [!IMPORTANT]
-> [`skill/make-ppt`](skill/make-ppt) 是本專案唯一的 canonical skill package。請修改這裡的來源檔，不要把使用者目錄中的安裝副本、暫存備份或產出資料夾複製回 repository。
-
-## 主要能力
-
-- 根據專案素材建立可追溯的 evidence pack，避免無來源的結論與數字。
-- 先規劃敘事與 `outline.md`，經使用者確認後才開始製作投影片。
-- 先產生 1–2 頁 style sample，確認視覺方向後再完成全份簡報。
-- 輸出物件層級可編輯的 PowerPoint，而不是整頁圖片。
-- 支援 `editorial-light` 與 `report-dark` 兩種受控封面變體。
-- 提供三套受控色票：`warm-editorial`（預設暖米棕）、`nord-slate`（北境灰藍）、`mono-print`（極簡黑白）；Planner 依報告類型建議，於大綱確認時決定。
-- 提供 timeline、status matrix 等關係型版面元件。
-- 修改既有簡報時先判斷影響範圍，小修改維持局部更新。
-- 檢查台灣繁體中文用語，不自動取代需要人工判斷的詞彙。
-- 可安裝到 Codex、Claude Code、Kiro、GitHub Copilot 與 Google Antigravity。
+簡報上的每個數字和結論都要對得回來源檔案。除了 `.pptx`，它還會留下大綱、證據紀錄、產生簡報的 Python 程式和逐頁預覽圖，下次要改內容不用從頭做。
 
 ## 快速開始
 
-需求：Python 3.9 或更新版本。
-
-先預覽安裝位置，再安裝到你使用的 client：
+需要 Python 3.9 以上。
 
 ```powershell
 git clone https://github.com/Ding522/make-ppt.git
 cd make-ppt
 
-python .\install.py --client codex --scope user --dry-run
+python .\install.py --client codex --scope user --dry-run   # 先看會裝到哪裡
 python .\install.py --client codex --scope user
-python .\doctor.py --client codex --scope user
+python .\doctor.py --client codex --scope user              # 檢查環境
 ```
 
-把 `codex` 改為 `claude`、`kiro`、`copilot` 或 `antigravity`，即可安裝到其他 client。使用 `--client all` 可一次處理所有已註冊的 client。
+`codex` 可以換成 `claude`、`kiro`、`copilot`、`antigravity`，或用 `all` 一次裝全部。
 
-接著在含有來源資料的專案目錄中提出需求：
+裝好後，到放資料的專案目錄直接講需求就可以：
 
 ```text
-使用 make-ppt，把這個資料夾的素材整理成 10 頁、面向工程主管的台灣繁體中文技術簡報。主軸聚焦交付成果，最後提出下一階段的資源需求。
+使用 make-ppt，把這個資料夾的素材整理成 10 頁、給工程主管看的技術簡報。重點放在這季交付了什麼，最後提下一階段需要的人力。
 ```
 
-支援 skills 指令的 client 也可能提供 `/make-ppt` 或 `$make-ppt`；使用自然語言呼叫不依賴特定指令格式。
+有些 client 也支援 `/make-ppt` 或 `$make-ppt`，但用一般句子呼叫就行，不依賴特定指令。
 
-## 工作流程
+## 做一份簡報的流程
 
-```text
-來源素材
-  -> evidence pack
-  -> 敘事方向（必要時提供 Narrative Fork）
-  -> outline.md
-  -> 使用者確認大綱
-  -> 1–2 頁 style sample
-  -> 使用者確認風格
-  -> 完整 PPTX、逐頁預覽與 contact sheet
-```
+不會一開口就產出整份簡報，中間會停兩次（橘色框）讓你確認，確認過才往下做：
 
-`presentation/outline.md` 是簡報的 source of truth。Planner 負責證據、敘事與大綱；Builder 只依照已核准的大綱實作，不自行改變論點、證據或順序。即使同一個 agent 依序執行兩個角色，這個界線仍然成立。
+![make-ppt 製作流程](docs/images/workflow.svg)
 
-預設產出結構：
+`presentation/outline.md` 是整份簡報的依據。Planner 負責證據、敘事和大綱，Builder 只照核准過的大綱做，不會自己改論點、證據或順序；就算兩個角色是同一個 agent 跑的也一樣。
+
+產出會放在 `presentation/`：
 
 ```text
 presentation/
-├── narrative-forks.md          # 方向不明或 explore 模式時產生
-├── outline.md                  # 已規劃的簡報規格與內容來源
-├── edit-impact.md              # 非小型既有簡報修改時產生
-├── evidence/
-│   ├── manifest.md
-│   ├── manifest.json
-│   └── sources/*.md
-├── presentation.pptx           # 可編輯簡報
-├── src/                        # 可維護的產生程式
-├── preview/slide-01.png ...    # 逐頁預覽
+├── narrative-forks.md          # 方向不明或 explore 模式才有
+├── outline.md                  # 大綱
+├── edit-impact.md              # 修改既有簡報、且不是小修改時才有
+├── evidence/                   # manifest.md、manifest.json、sources/*.md
+├── presentation.pptx
+├── src/                        # 產生簡報的程式
+├── preview/slide-01.png ...
 └── preview-contact-sheet.png
 ```
 
-原始來源素材不會被覆寫。
+原始資料不會被覆寫。
 
-## 敘事與成本模式
+## 配色
 
-| 模式 | 適用情境 | 行為 |
+每份簡報只用一套配色，在大綱確認時決定（記在 `outline.md` 的 `Palette`）。Planner 會依簡報類型建議一套，你也可以直接指定。
+
+### `warm-editorial`：暖米棕（預設）
+
+適合技術分享、導入經驗、案例研究、專案回顧。
+
+![warm-editorial 配色預覽](docs/images/palettes/warm-editorial.svg)
+
+### `nord-slate`：灰藍
+
+以 Nord 色系為基礎，適合架構說明、雲端／資安、技術規格。
+
+![nord-slate 配色預覽](docs/images/palettes/nord-slate.svg)
+
+### `mono-print`：黑白
+
+適合正式文件、會印出來或灰階輸出的報告、稽核報告。這套沒有彩色強調色，重點靠字重和線條。
+
+![mono-print 配色預覽](docs/images/palettes/mono-print.svg)
+
+色值定義在 [`theme.py`](skill/make-ppt/assets/src-template/theme.py) 的 `PALETTES`。改了色值之後，執行 `python docs\images\palettes\generate.py` 重新產生上面的預覽圖。
+
+封面有兩種：技術分享類預設用淺色的 `editorial-light`，月報、進度報告、給主管看的狀態報告預設用深色的 `report-dark`（上圖右側就是 `report-dark` 的樣子）。
+
+## 其他功能
+
+- 輸出的是一般的 PowerPoint 物件（文字框、表格、圖形），不是貼整頁圖片，拿到後可以自己改。
+- 內建 timeline、status matrix 等版面，用來畫流程、時程和狀態對照。
+- 修改既有簡報時，會先判斷影響範圍；小修改只動相關頁面，不會整份重做。
+- 會檢查台灣繁體中文用語。像「配置」這種要看上下文的詞只會列出來給你看，不會自動替換。
+
+## 確認點與成本模式
+
+| 模式 | 什麼時候用 | 行為 |
 |---|---|---|
-| `standard` | 預設 | 方向清楚時直接規劃；不清楚時先提供三個精簡的 Narrative Fork。 |
-| `explore` | 想比較不同說法 | 即使需求相對清楚，仍先比較三種敘事軸線；不會產生三份完整簡報。 |
-| `strict` | 明確要求節省成本或快速完成 | 不主動展開替代方向；資訊不足時提出聚焦問題。 |
+| `standard` | 預設 | 方向清楚就直接規劃；不清楚時先給三個簡短的敘事方向。 |
+| `explore` | 想比較不同講法 | 就算需求很清楚，也先比較三種敘事方向。只比方向，不會做三份簡報。 |
+| `strict` | 明確說要省成本或趕時間 | 不主動提其他方向，資訊不夠時直接問。 |
 
-所有模式都會停在大綱與 style sample 兩個確認點。敘事方向、主要章節的新增、刪除或重排，以及投影片的新增或刪除，都會讓先前的核准失效並觸發新的大綱確認；純文案修正與不影響結構的視覺微調則不會。
-
-Policy contract（穩定措辭）：
+三種模式都會停在大綱和樣張這兩個確認點。改敘事方向、新增／刪除／重排主要章節、新增或刪除投影片，都要重新確認大綱；只改文字或不影響結構的視覺微調則不用。SKILL 裡對應的原文是：
 
 ```text
 Narrative changes, major-section additions/removals/reordering, or slide
 additions/removals invalidate prior approval.
 ```
 
-更完整的規則請見 [`cost-control-workflow.md`](skill/make-ppt/references/cost-control-workflow.md)。
+細節見 [`cost-control-workflow.md`](skill/make-ppt/references/cost-control-workflow.md)。
 
 ## 安裝與更新
-
-### 安裝位置
 
 | Client | User scope | Project scope |
 |---|---|---|
@@ -110,98 +111,85 @@ additions/removals invalidate prior approval.
 | GitHub Copilot | `~/.copilot/skills/make-ppt` | `.github/skills/make-ppt` |
 | Google Antigravity | `~/.gemini/config/skills/make-ppt` | `.agents/skills/make-ppt` |
 
-安裝程式也會從 canonical role references 產生各 client 使用的 Planner 與 Builder agent 檔案。Client 路徑、格式、metadata overlay 與 legacy 位置的唯一登錄來源是 [`integrations/clients.json`](integrations/clients.json)。
-
-### 常用指令
+安裝時也會順便產生各 client 用的 Planner 和 Builder agent 檔。各 client 的路徑、格式和舊版位置都登記在 [`integrations/clients.json`](integrations/clients.json)。
 
 ```powershell
-# 安裝所有 client
+# 裝到所有 client
 python .\install.py --client all --scope user
 
-# 安裝到指定專案
+# 裝到某個專案
 python .\install.py --client all --scope project --project-dir C:\path\to\project
 
-# 更新已存在的安裝
+# 覆蓋更新
 python .\install.py --client all --scope user --force
 
-# 同時安裝 skill 內附的 Python dependencies
+# 連同 Python 套件一起裝（預設不會裝）
 python .\install.py --client all --scope user --install-python-deps
 
-# 檢查環境與安裝狀態
+# 檢查
 python .\doctor.py --client all --scope user
 ```
 
-安裝 Python dependencies 是明確選項，不會在一般安裝時自動執行。若要搬移舊版安裝，先用 `--dry-run --migrate-legacy` 預覽，再使用 `--force --migrate-legacy`；legacy installation 不會被靜默刪除。
+要搬移舊版安裝，先用 `--dry-run --migrate-legacy` 看會動到什麼，再用 `--force --migrate-legacy` 執行。舊的安裝不會被默默刪掉。
 
-## 渲染需求
+## 產生預覽圖需要什麼
 
-Skill 需要檔案讀寫權限及 Python 3.9+。Python 套件定義於 [`requirements.txt`](skill/make-ppt/requirements.txt)。
+Python 套件列在 [`requirements.txt`](skill/make-ppt/requirements.txt)。預覽圖的渲染方式：
 
-- Windows：優先使用 Microsoft PowerPoint。
-- macOS：使用 Microsoft PowerPoint，並以 Poppler 產生預覽。
-- 可攜式 fallback：LibreOffice + Poppler。
+- Windows：優先用 Microsoft PowerPoint。
+- macOS：Microsoft PowerPoint，再用 Poppler 轉圖。
+- 都沒有的話：LibreOffice + Poppler。
 
-執行 doctor 可確認 Python packages、renderer 與各 client 的安裝狀態：
+`doctor.py` 會告訴你哪些有裝、哪些缺：
 
 ```powershell
 python .\doctor.py --client all --scope user
 python .\doctor.py --client antigravity --scope project --project-dir C:\path\to\project
 ```
 
-## 專案結構
+## 開發
 
 ```text
 make-ppt/
-├── skill/make-ppt/          # canonical skill package；主要修改位置
-│   ├── SKILL.md             # orchestration contract
-│   ├── assets/src-template/ # PPTX theme、primitives 與版面元件
+├── skill/make-ppt/          # skill 本體，要改就改這裡
+│   ├── SKILL.md
+│   ├── assets/src-template/ # theme、primitives、版面元件
 │   ├── references/          # Planner、Builder、風格與品質規則
-│   ├── scripts/             # evidence、render、lint 與 validation 工具
-│   └── templates/           # outline、Narrative Fork、edit impact 範本
-├── integrations/            # client registry 與 agent metadata
-├── tests/                   # 安裝、政策、版面、語言與渲染測試
-├── install.py               # 跨 client 安裝程式
-├── doctor.py                # 環境與安裝診斷
-└── client_registry.py       # client registry loader
+│   ├── scripts/             # evidence、渲染、用語檢查、驗證
+│   └── templates/           # outline、敘事方向、edit impact 範本
+├── integrations/            # 各 client 的設定與 agent metadata
+├── docs/                    # README 圖片與 agent 協作文件
+├── tests/
+├── install.py
+├── doctor.py
+└── client_registry.py
 ```
 
-### Source of truth 規則
+幾個要注意的地方：
 
-1. Skill 本體只修改 `skill/make-ppt/`。
-2. Client 差異只修改 `integrations/` 與 `integrations/clients.json`。
-3. 不直接修改 `~/.agents/skills`、`~/.codex/agents` 等安裝結果；修改來源後重新執行 `install.py --force`。
-4. 不把 installed skill backup、預覽圖片、測試輸出或完整 `presentation/` 產物當成 repository 來源。
-5. 提交前先執行測試並檢查 `git status`，確認沒有複製產物混入。
+- 改 skill 只改 `skill/make-ppt/`；client 之間的差異只改 `integrations/` 和 `integrations/clients.json`。
+- 不要直接改 `~/.agents/skills`、`~/.codex/agents` 這類安裝出去的檔案，改完來源後重跑 `install.py --force`。
+- 不要把安裝副本、備份、預覽圖、測試輸出或整個 `presentation/` 複製回 repo。commit 前看一下 `git status`。
 
-## 開發與驗證
-
-執行完整測試：
+跑測試：
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
-預覽所有 client 的安裝結果，不寫入檔案：
-
-```powershell
-python .\install.py --client all --scope user --dry-run
-```
-
-檢查大綱或簡報中的台灣用語：
+檢查用語（高信心的用語問題會讓檢查失敗，需要看上下文的只列出來）：
 
 ```powershell
 python .\skill\make-ppt\scripts\lint_zh_tw.py presentation\outline.md --outline-visible-only
 python .\skill\make-ppt\scripts\lint_zh_tw.py presentation\presentation.pptx
 ```
 
-高信心項目會使檢查失敗；例如「配置」這類需視上下文判斷的詞，只會列出供人工確認，不會被自動取代。
+## 延伸閱讀
 
-## 進一步閱讀
-
-- [Skill orchestration contract](skill/make-ppt/SKILL.md)
-- [Planner role](skill/make-ppt/references/ppt-planner-role.md)
-- [Builder role](skill/make-ppt/references/ppt-builder-role.md)
+- [SKILL.md](skill/make-ppt/SKILL.md)
+- [Planner 角色](skill/make-ppt/references/ppt-planner-role.md)
+- [Builder 角色](skill/make-ppt/references/ppt-builder-role.md)
 - [Style guide](skill/make-ppt/references/style-guide.md)
-- [Information visualization](skill/make-ppt/references/information-visualization.md)
-- [Relationship layouts](skill/make-ppt/references/relationship-layouts.md)
-- [PPTX generation rules](skill/make-ppt/references/pptx-generation-rules.md)
+- [資訊視覺化](skill/make-ppt/references/information-visualization.md)
+- [關係型版面](skill/make-ppt/references/relationship-layouts.md)
+- [PPTX 產生規則](skill/make-ppt/references/pptx-generation-rules.md)

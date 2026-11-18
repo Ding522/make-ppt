@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="872" height="300" viewBox="0 0 872 300" role="img" aria-label="nord-slate palette preview">
+<rect x="0.5" y="0.5" width="415" height="233" fill="#ECEFF4" stroke="#D8DEE9"/>
+<text x="22" y="30" fill="#B8603E" font-family="Consolas,Menlo,monospace" font-size="10" font-weight="normal">// 03    交付成果 · 平台組</text>
+<text x="22" y="60" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="20" font-weight="bold"><tspan fill="#2E3440">部署時間從 40 分鐘降到 </tspan><tspan fill="#B8603E">8 分鐘</tspan></text>
+<text x="22" y="82" fill="#4C566A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">瓶頸在映像檔建置，加上快取後大幅縮短</text>
+<line x1="22" y1="96" x2="394" y2="96" stroke="#D8DEE9"/>
+<rect x="22" y="110" width="178" height="102" rx="5" fill="#F7F9FB" stroke="#D2D9E3"/>
+<text x="34" y="132" fill="#6F7889" font-family="Consolas,Menlo,monospace" font-size="10" font-weight="normal">檢查結果</text>
+<rect x="34" y="142" width="48" height="20" rx="4" fill="#5D8A4E"/><text x="58.0" y="156" fill="#ECEFF4" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="bold" text-anchor="middle">通過</text>
+<rect x="88" y="142" width="48" height="20" rx="4" fill="#B04A55"/><text x="112.0" y="156" fill="#ECEFF4" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="bold" text-anchor="middle">風險</text>
+<rect x="142" y="142" width="48" height="20" rx="4" fill="#3F6A9A"/><text x="166.0" y="156" fill="#ECEFF4" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="bold" text-anchor="middle">工具</text>
+<rect x="34" y="174" width="102" height="20" rx="4" fill="#F2DDD3"/><text x="85.0" y="188" fill="#B8603E" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="bold" text-anchor="middle">重點標示</text>
+<rect x="214" y="110" width="180" height="102" rx="5" fill="#3B4252"/>
+<text x="228" y="136" fill="#D8DEE9" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">$ make build</text>
+<text x="228" y="160" fill="#8C96A8" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal"># cache hit 92%</text>
+<text x="228" y="184" fill="#D08770" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="bold">→ done in 8m 02s</text>
+<rect x="456" y="0" width="416" height="234" fill="#2E3440"/>
+<line x1="478" y1="26" x2="850" y2="26" stroke="#ECEFF4" stroke-opacity="0.45"/>
+<text x="478" y="44" fill="#C9D1DD" font-family="Consolas,Menlo,monospace" font-size="10" font-weight="normal">平台組 · 2026-11</text>
+<text x="478" y="98" fill="#D08770" font-family="Consolas,Menlo,monospace" font-size="10" font-weight="normal">// MONTHLY REPORT</text>
+<text x="478" y="136" fill="#ECEFF4" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="30" font-weight="bold">十一月交付報告</text>
+<rect x="478" y="152" width="44" height="3" fill="#D08770"/>
+<text x="478" y="180" fill="#C9D1DD" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="12" font-weight="normal">範圍：CI/CD、監控、弱點修補</text>
+<rect x="0.5" y="260.5" width="28" height="28" rx="4" fill="#ECEFF4" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="36.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">背景</text>
+<text x="36.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#ECEFF4</text>
+<rect x="109.5" y="260.5" width="28" height="28" rx="4" fill="#2E3440" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="145.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">主文字</text>
+<text x="145.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#2E3440</text>
+<rect x="218.5" y="260.5" width="28" height="28" rx="4" fill="#4C566A" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="254.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">內文</text>
+<text x="254.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#4C566A</text>
+<rect x="327.5" y="260.5" width="28" height="28" rx="4" fill="#B8603E" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="363.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">強調</text>
+<text x="363.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#B8603E</text>
+<rect x="436.5" y="260.5" width="28" height="28" rx="4" fill="#3B4252" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="472.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">深色面板</text>
+<text x="472.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#3B4252</text>
+<rect x="545.5" y="260.5" width="28" height="28" rx="4" fill="#5D8A4E" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="581.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">通過</text>
+<text x="581.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#5D8A4E</text>
+<rect x="654.5" y="260.5" width="28" height="28" rx="4" fill="#B04A55" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="690.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">風險</text>
+<text x="690.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#B04A55</text>
+<rect x="763.5" y="260.5" width="28" height="28" rx="4" fill="#3F6A9A" stroke="#BBBBBB" stroke-opacity="0.6"/>
+<text x="799.0" y="272" fill="#8A8A8A" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif" font-size="11" font-weight="normal">資訊</text>
+<text x="799.0" y="287" fill="#8A8A8A" font-family="Consolas,Menlo,monospace" font-size="11" font-weight="normal">#3F6A9A</text>
+</svg>
